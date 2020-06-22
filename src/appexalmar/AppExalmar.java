@@ -23,7 +23,7 @@ public class AppExalmar {
             try {
                 MenuPrincipal menuPrincipal = new MenuPrincipal(1200, 700, true);
                 menuPrincipal.ShowFrame();                
-                
+                System.out.println("appexalmar.AppExalmar.main()");
                 
                 
             } catch (Exception e) {
