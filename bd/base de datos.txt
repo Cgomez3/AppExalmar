@@ -1,0 +1,45 @@
+CREATE TABLE `personal` (
+  `id_personal` smallint NOT NULL AUTO_INCREMENT,
+  `codsap` smallint DEFAULT NULL,
+  `apellido_nombres` varchar(500) DEFAULT NULL,
+  `dni` varchar(8) DEFAULT NULL,
+  `cargo` varchar(200) DEFAULT NULL,
+  `sede` varchar(200) DEFAULT NULL,
+  `fecha_ingreso` date DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `categoria` varchar(200) DEFAULT NULL,
+  `tipo_personal` char(1) DEFAULT NULL,
+  PRIMARY KEY (`id_personal`)
+) ENGINE=InnoDB AUTO_INCREMENT=1221 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `reporte_cabecera` (
+  `id_cabecera` int NOT NULL AUTO_INCREMENT,
+  `numero` int DEFAULT NULL,
+  `fecha` date DEFAULT NULL,
+  `hora` varchar(20) DEFAULT NULL,
+  `celular` varchar(45) DEFAULT NULL,
+  `localidad_domicilio` varchar(300) DEFAULT NULL,
+  `confinado_donde` varchar(300) DEFAULT NULL,
+  `sede` varchar(300) DEFAULT NULL,
+  `ep` varchar(100) DEFAULT NULL,
+  `tipo_atencion_seguimiento` varchar(100) DEFAULT NULL,
+  `tipo_presencial_virtual` varchar(100) DEFAULT NULL,
+  `alerta` varchar(50) DEFAULT NULL,
+  `cod_sap` varchar(20) DEFAULT NULL,
+  `medico` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id_cabecera`)
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `reporte_detalle` (
+  `id_detalle` smallint NOT NULL AUTO_INCREMENT,
+  `id_cabecera` smallint DEFAULT NULL,
+  `consulta` varchar(500) DEFAULT NULL,
+  `detalle` varchar(500) DEFAULT NULL,
+  `accion` varchar(500) DEFAULT NULL,
+  `diacnostico` varchar(500) DEFAULT NULL,
+  `medicacion` varchar(200) DEFAULT NULL,
+  `frecuencia` varchar(200) DEFAULT NULL,
+  `dias` varchar(50) DEFAULT NULL,
+  `cantidad_total` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id_detalle`),
+  KEY `id_cabecera_idx` (`id_cabecera`)
+) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
