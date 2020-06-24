@@ -63,8 +63,10 @@ import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -632,7 +634,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
         listaDisable.add(3);
         try {
 
-            table = new D_Table(titleHeader, reporteModel.listaReporte(), listaDisable);
+            table = new D_Table(titleHeader, reporteModel.listaReporte());
             table.AddBackGroundColorTable(new Color(52, 202, 188));
             table.AddBackGroundColorTableHeader(new Color(52, 202, 188));
             table.EnableRowSorter(true);
@@ -902,32 +904,59 @@ public class ReporteInternal extends D_InternalFrameLayout {
                             }
                             if (button.getName().equals("I")) {
                                 // Esto es lo que va delante de @gmail.com en tu cuenta de correo. Es el remitente también.
-                                String remitente = "cristhiang343@gmail.com";  //Para la dirección nomcuenta@gmail.com
-
+                                String username = "cristhiang343@gmail.com";  //Para la dirección nomcuenta@gmail.com
+                                String password = "Daniel@84";
                                 Properties props = System.getProperties();
 
-                                props.put("mail.smtp.host", "smtp.gmail.com");  //El servidor SMTP de Google
-                                props.put("mail.smtp.user", remitente);
-                                props.put("mail.smtp.clave", "Daniel@84");    //La clave de la cuenta
-                                props.put("mail.smtp.auth", "true");    //Usar autenticación mediante usuario y clave
-                                props.put("mail.smtp.starttls.enable", "true"); //Para conectar de manera segura al servidor SMTP
-                                props.put("mail.smtp.port", "587"); //El puerto SMTP seguro de Google
-                                Session session = Session.getDefaultInstance(props);
-                                MimeMessage message = new MimeMessage(session);
+                                props.put("mail.smtp.starttls.enable", "true");
+                                props.put("mail.smtp.host", "smtp.gmail.com");
+                                props.put("mail.smtp.user", "cristhiang343@gmail.com");
+                                props.put("mail.smtp.password", "Daniel@84");
+                                props.put("mail.smtp.port", "587");
+                                props.put("mail.smtp.auth", "true");
 
-                                try {
-                                    String destinatario="cgomez@tecnologiatextil.com";
-                                    message.setFrom(new InternetAddress(remitente));
-                                    message.addRecipients(Message.RecipientType.TO, destinatario);   //Se podrían añadir varios de la misma manera
-                                    message.setSubject("asunto impor");
-                                    message.setText("Hola como estas");
-                                    Transport transport = session.getTransport("smtp");
-                                    transport.connect("smtp.gmail.com", remitente, "clave");
-                                    transport.sendMessage(message, message.getAllRecipients());
-                                    transport.close();
-                                } catch (MessagingException me) {
-                                    me.printStackTrace();   //Si se produce un error
-                                }
+                                Session session = Session.getDefaultInstance(props);
+                                session.setDebug(true);
+
+                                EventQueue.invokeLater(() -> {
+                                    try {
+                                        //https://myaccount.google.com/security
+                                        MimeMessage message = new MimeMessage(session);
+                                        message.setFrom(new InternetAddress("cristhiang343@gmail.com"));
+                                        message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("cristhiang343@gmail.com"));
+                                        message.setSubject("Prueba");
+                                        String table = "<table border ='1'>"
+                                                + "<tr><td colspan='14'>ATENCIÓN 22 DE JUNIO DEL 2020 : DRA VALENTIN LAZO</td><tr/>"
+                                                + "<tr>"
+                                                + "<td style='background-color:rgb(68,114,196)'>APELLIDOS Y NOMBRES</td>"
+                                                + "<td>CARGO</td>"
+                                                + "<td>CONFINADO <br/>/ DONDE</td>"
+                                                + "<td>SEDE</td>"
+                                                + "<td>CONSULTA</td>"
+                                                + "<td>DETALLE</td>"
+                                                + "<td>ACCIÓN</td>"
+                                                + "<td>DIAGNOSTICO</td>"
+                                                + "<td>MEDICAMENTO</td>"
+                                                + "<td>FRECUENCIA</td>"
+                                                + "<td>DIAS</td>"
+                                                + "<td>CANTIDAD <br/>TOTAL</td>"
+                                                + "<td>TIPO <br/>(ATENCIÓN <br/>/ SEGUIMIENTO <br/>DE CASOS)</td>"
+                                                + "<td>TIPO <br/>(PRESENCIAL/<br/>VISTUAL)</td>"
+                                                + "<tr/>"
+                                                + "</table>";
+                                        message.setText(table, "ISO-8859-1", "html");
+                                        try (Transport transport = session.getTransport("smtp")) {
+                                            transport.connect("cristhiang343@gmail.com", "Daniel@84");
+                                            transport.sendMessage(message, message.getAllRecipients());
+                                        }
+                                    } catch (MessagingException me) {
+                                        System.out.println("Error:>> " + me.getMessage());
+                                        //Aqui se deberia o mostrar un mensaje de error o en lugar
+                                        //de no hacer nada con la excepcion, lanzarla para que el modulo
+                                        //superior la capture y avise al usuario con un popup, por ejemplo.
+                                        return;
+                                    }
+                                });
 
                             }
                         }
