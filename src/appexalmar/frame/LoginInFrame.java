@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 /**
  *
@@ -47,29 +46,31 @@ public class LoginInFrame extends D_FrameLayout {
     }
 
     private void Configuration() throws Exception {
-        this.setBackground(new Color(52, 202, 188));
+        this.BackgroundColor(new Color(52, 202, 188));
         this.EnableMenu(false, null, new D_Label("Ingresar a Reporte de LLamadas", Color.white, false));
 
         D_TextField txtUsuarioLog = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        D_PasswordField txtpass = new D_PasswordField(1,10);
+        txtUsuarioLog.setPreferredSize(new Dimension(170, 30));
+        D_PasswordField txtpass = new D_PasswordField(1, 10);
         D_Button btnIngresar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "Ingresar");
         D_Button btnCancelar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "Cancelar");
         D_Button btnRegistrar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("addsi.png")));
         btnRegistrar.setPreferredSize(new Dimension(50, 30));
 
         D_PanelGroup formGroup = new D_PanelGroup(new Color(52, 202, 188));
+        formGroup.setBackground(Color.GREEN);
         D_PanelGroupItem groupItem = new D_PanelGroupItem();
         groupItem.setBackground(new Color(52, 202, 188));
-        
+
         groupItem.AddTitle(new D_Label("INGRESAR", Color.BLACK, true), null, 1);
-        
+
         Object[] columnas = {new D_Label("Usuario:", Color.BLACK, false), txtUsuarioLog};
         Object[] columnas1 = {new D_Label("Clave:", Color.BLACK, false), txtpass};
         List<Object[]> filas = new ArrayList<>();
         filas.add(columnas);
         filas.add(columnas1);
         groupItem.VerticalAlignedContainerBody(filas);
-
+//
         List<Object> filasControles = new ArrayList<>();
         filasControles.add(btnIngresar);
         filasControles.add(btnCancelar);
@@ -79,9 +80,8 @@ public class LoginInFrame extends D_FrameLayout {
 
         formGroup.AddComponet(0, 0, 1, 1, 0, groupItem);
         this.AddFrameToBody(formGroup);
-        this.AddformularyVersion(Singletoon.version);
         this.AddformularyAutor(Singletoon.autor, Color.yellow);
-        this.AddFooterControls(null, new Color(52, 202, 188), 1, Color.PINK);
+        this.AddFooterControls(null, null, 1, null);
 
         btnCancelar.addActionListener(new ActionListener() {
             @Override
@@ -103,8 +103,8 @@ public class LoginInFrame extends D_FrameLayout {
                         MenuPrincipal menuPrincipal = new MenuPrincipal(1200, 700, true);
                         menuPrincipal.ShowFrame();
                         d_FrameLayout.dispose();
-                    }else{
-                     JOptionPane.showMessageDialog(null, "Usuario y Clave incorrecto!!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Usuario y Clave incorrecto!!");
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(LoginInFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -118,14 +118,16 @@ public class LoginInFrame extends D_FrameLayout {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    D_FrameLayout frameRegistro = new D_FrameLayout(400, 350, false);
-                    frameRegistro.setBackground(new Color(52, 202, 188));
-                    frameRegistro.EnableMenu(false, null, new D_Label("Registrar Usuario", Color.white, false));
-                    
+                    D_FrameLayout frameRegistro = new D_FrameLayout(350, 300, false);
+                    frameRegistro.BackgroundColor(Color.GRAY);
+                    //frameRegistro.EnableMenu(false, null, new D_Label("Registrar Usuario", Color.white, false));
+
                     D_PanelGroup formGroup = new D_PanelGroup(Color.RED);
                     D_PanelGroupItem groupItem = new D_PanelGroupItem();
+                    groupItem.setPreferredSize(new Dimension(300, 200));
                     groupItem.setBackground(new Color(52, 202, 188));
                     D_TextField txtNombreReg = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
+                    txtNombreReg.setPreferredSize(new Dimension(180, 30));
                     D_TextField txtUsuarioReg = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
                     D_TextField txtClaveReg = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
 
@@ -149,6 +151,8 @@ public class LoginInFrame extends D_FrameLayout {
 
                     formGroup.AddComponet(0, 0, 1, 1, 0, groupItem);
                     frameRegistro.AddFrameToBody(formGroup);
+                    frameRegistro.AddformularyAutor(Singletoon.autor, Color.yellow);
+                    frameRegistro.AddFooterControls(null, null, 1, null);
                     frameRegistro.ShowFrame();
                     btnGrabarReg.addActionListener(new ActionListener() {
                         @Override

@@ -120,6 +120,13 @@ public class MenuPrincipal extends D_FrameLayout {
         d_MenuItem.setInternalFrame(new ReporteInternal(this, 1000, 600, false));
         
         listaMenuItem.add(d_MenuItem);
+        
+        d_MenuItem = new D_MenuItem();
+        d_MenuItem.setTitulo("Correo");
+        d_MenuItem.setInternalFrame(new CorreoInternal(this, 400, 350, false));
+        
+        listaMenuItem.add(d_MenuItem);
+        
         d_Menu.setMenuItemBeans(listaMenuItem);
         listaMenu.add(d_Menu);
         

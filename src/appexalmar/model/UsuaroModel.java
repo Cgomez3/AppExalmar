@@ -17,7 +17,8 @@ import java.sql.Statement;
  *
  * @author ADMIN
  */
-public class UsuaroModel implements IUsuario{
+public class UsuaroModel implements IUsuario {
+
     private Conexion conexion = new Conexion();
     PreparedStatement prepareStatement;
     Statement statement;
@@ -28,7 +29,7 @@ public class UsuaroModel implements IUsuario{
     public void GrabarUsuario(UsuarioBeans usuario) throws SQLException {
         SQL = "INSERT INTO USUARIOS (NOMBRES, USUARIO, CLAVE) VALUES (?, ?, ?)";
         prepareStatement = conexion.getConection().prepareStatement(SQL, PreparedStatement.RETURN_GENERATED_KEYS);
-        prepareStatement.setInt(1,Integer.parseInt(usuario.getNombre()));
+        prepareStatement.setString(1, usuario.getNombre());
         prepareStatement.setString(2, usuario.getUsuario());
         prepareStatement.setString(3, usuario.getClave());
         int pt = prepareStatement.executeUpdate();
@@ -37,13 +38,13 @@ public class UsuaroModel implements IUsuario{
 
     @Override
     public UsuarioBeans ObtieneUsuario(UsuarioBeans usuario) throws SQLException {
-         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        String consulta = "SELECT NOMBRES, USUARIO, CLAVE FROM USUARIOS WHERE USUARIO= " + usuario.getUsuario() + " AND CLAVE= "+ usuario.getClave();
+        statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        String consulta = "SELECT NOMBRES, USUARIO, CLAVE FROM USUARIOS WHERE USUARIO= '" + usuario.getUsuario() + "' AND CLAVE= '" + usuario.getClave()+"'";
         resultSet = statement.executeQuery(consulta);
         UsuarioBeans usuarioloc = null;
         while (resultSet.next()) {
             usuarioloc = new UsuarioBeans();
-            usuarioloc.setNombre(String.valueOf(resultSet.getInt("NOMBRES")));
+            usuarioloc.setNombre(resultSet.getString("NOMBRES"));
             usuarioloc.setUsuario(resultSet.getString("USUARIO"));
             usuarioloc.setClave(resultSet.getString("CLAVE"));
 

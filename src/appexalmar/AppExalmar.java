@@ -22,7 +22,7 @@ public class AppExalmar {
 
         EventQueue.invokeLater(() -> {
             try {
-                LoginInFrame frame=new LoginInFrame(400,215, false);
+                LoginInFrame frame=new LoginInFrame(350,215, false);
                 frame.ShowFrame();
                 System.out.println("appexalmar.AppExalmar.main()");
                 
