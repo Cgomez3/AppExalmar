@@ -11,7 +11,7 @@ package appexalmar.bean;
  */
 public class Singletoon {
     private static Singletoon instanciaUnica;
-    public UsuarioBeans usuario=null;
+    public static UsuarioBeans usuario=null;
     public static String version="1.0.0";
     public static String autor="Cristhian gomez";
     private Singletoon() {}

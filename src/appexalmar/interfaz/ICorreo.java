@@ -14,5 +14,7 @@ import java.sql.SQLException;
  */
 public interface ICorreo {
     void GrabarCorreo(CorreoBeans correo)throws SQLException;
-     String  ObtieneCorreo (Integer idusuario)throws SQLException;
+     String  ObtieneCadenaCorreo (Integer idusuario)throws SQLException;
+     CorreoBeans ObtieneCorreo(Integer idusuario) throws SQLException;
+     void UpdateCorreo(CorreoBeans correo)throws SQLException;
 }

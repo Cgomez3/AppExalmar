@@ -21,13 +21,17 @@ import Api.swing.frameword.controles.D_TextField;
 import Api.swing.frameword.frame.D_FrameLayout;
 import Api.swing.frameword.frame.D_InternalFrameLayout;
 import Api.swing.frameword.panel.D_PanelFooter;
+import Api.swing.frameword.panel.D_PanelGroup;
 import Api.swing.frameword.panel.D_PanelTable;
+import appexalmar.bean.CorreoBeans;
 import appexalmar.bean.DetalleReporteBeans;
 import appexalmar.bean.PersonalExalmarBeans;
 import appexalmar.bean.ReporteCabeceraBeans;
+import appexalmar.bean.Singletoon;
 import appexalmar.bean.TableDetalleReporteBeans;
 import appexalmar.bean.TableReporteBean;
 import appexalmar.image.RutaImagen;
+import appexalmar.model.CorreoModel;
 import appexalmar.model.PersonaModel;
 import appexalmar.model.ReporteModel;
 import com.mysql.jdbc.Connection;
@@ -138,7 +142,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
     D_TextField txtPrenVirDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
     D_CheckBox chksiDetalle = new D_CheckBox(1, 10, Color.WHITE);
     D_Table table;
-
+    CorreoModel correoModel = new CorreoModel();
     private final JFileChooser fileChooser = new JFileChooser();
     private D_ProgressBar d_ProgressBar;
     D_Button btnCragraExcel;
@@ -153,6 +157,9 @@ public class ReporteInternal extends D_InternalFrameLayout {
     D_TextField txtFrecuenciaDetalle;
     D_TextField txtDiasDetalle;
     D_TextField txtCantidadTotalDetalle;
+    D_TextArea txtEnvioMensageCorreo;
+    D_CheckBox chkEnvioMensage;
+    D_TextField txtAsunto;
 
     public ReporteInternal(Object _frame, int _width, int _height, boolean _enableDestopPane) throws HeadlessException {
         super(_frame, _width, _height, _enableDestopPane);
@@ -663,7 +670,6 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     if (((String) codSap).isEmpty()) {
                                         codSap = "0";
                                     }
-                                    System.out.println(".mouseClicked()ZZ>>" + codSap);
                                     PersonalExalmarBeans personal = personaModel.ObtinePersona((String) codSap);
                                     if (personal != null) {
                                         DNI = personal.getDni();
@@ -700,7 +706,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     tituloDetalle[8] = "DIAS";
                                     tituloDetalle[9] = "CANTIDAD TOTAL";
                                     listaTableDetalle = reporteModel.listaTableDetalleReporte(id_cabecera_editar);
-                                    if (listaDisable.size() > 0) {
+                                    if (listaTableDetalle.size() > 0) {
                                         tableDetalle = new D_Table(tituloDetalle, listaTableDetalle);
                                     } else {
                                         tableDetalle = new D_Table(tituloDetalle);
@@ -814,7 +820,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     Object tipoAtencion = table.getValueAt(row, 14);
                                     Object tipoPresencial = table.getValueAt(row, 15);
                                     Object alerta = table.getValueAt(row, 17);
-
+                                    int id_cabecera_editar = Integer.parseInt(button.getHiddenValue());
                                     registroLlamadas.AddFiltersToFrameHeader(LLenarControles(registroLlamadas, (String) DNI, (String) apeNom, (String) codSap, (String) celular, (String) localidad, (String) confinado, (String) sede, (String) ep, (String) tipoAtencion, (String) tipoPresencial, (String) alerta), new Color(52, 202, 188), "");
 
                                     tituloDetalle = new String[10];
@@ -828,8 +834,12 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     tituloDetalle[7] = "FRECUENCIA";
                                     tituloDetalle[8] = "DIAS";
                                     tituloDetalle[9] = "CANTIDAD TOTAL";
-
-                                    tableDetalle = new D_Table(tituloDetalle);
+                                    listaTableDetalle = reporteModel.listaTableDetalleReporte(id_cabecera_editar);
+                                    if (listaTableDetalle.size() > 0) {
+                                        tableDetalle = new D_Table(tituloDetalle, listaTableDetalle);
+                                    } else {
+                                        tableDetalle = new D_Table(tituloDetalle);
+                                    }
                                     AddEventoTableDetalle(registroLlamadas);
                                     tableDetalle.AddColumWidth(AnchoColunaDetalle());
                                     tableDetalle.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -904,7 +914,49 @@ public class ReporteInternal extends D_InternalFrameLayout {
                             }
                             if (button.getName().equals("I")) {
                                 // Esto es lo que va delante de @gmail.com en tu cuenta de correo. Es el remitente también.
-                                EnvioCorreo(Integer.parseInt(button.getHiddenValue()));
+                                D_InternalFrameLayout envioCorreoInternal = new D_InternalFrameLayout(internalFrameLayout, 400, 250, false);
+                                try {
+                                    envioCorreoInternal.BackgroundColor(new Color(52, 202, 188));
+                                    envioCorreoInternal.EnableMenu(false, null, new D_Label("Envio de Correo", Color.WHITE, true));
+                                    D_PanelGroup d_PanelGroup = new D_PanelGroup();
+                                    txtEnvioMensageCorreo = new D_TextArea(false, 4, 1, Color.WHITE);
+                                    chkEnvioMensage = new D_CheckBox(1, 10, Color.RED);
+                                    chkEnvioMensage.setText("Mensaje Programado");
+                                    chkEnvioMensage.setPreferredSize(new Dimension(200, 30));
+                                    D_ScrollPane d_ScrollPane = new D_ScrollPane(1, 10, txtEnvioMensageCorreo);
+                                    d_ScrollPane.setPreferredSize(new Dimension(200, 90));
+                                    txtAsunto = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
+                                    txtAsunto.setPreferredSize(new Dimension(200, 30));
+                                    CorreoBeans correo = correoModel.ObtieneCorreo(Singletoon.getInstance().usuario.getId_usuario());
+                                    if (correo != null) {
+                                        txtAsunto.setText(correo.getAsunto());
+                                    }
+                                    D_Button btnEnviarCorreo = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("sendmessag.png")), "Enviar Correo");
+                                    btnEnviarCorreo.setPreferredSize(new Dimension(150, 30));
+                                    d_PanelGroup.AddComponet(0, 0, 1, 1, 0, new D_Label("Asunto:", Color.white, true));
+                                    d_PanelGroup.AddComponet(1, 0, 1, 1, 0, txtAsunto);
+                                    d_PanelGroup.AddComponet(0, 1, 1, 1, 0, new D_Label("Mensaje:", Color.white, true));
+                                    d_PanelGroup.AddComponet(1, 1, 1, 1, 0, d_ScrollPane);
+                                    d_PanelGroup.AddComponet(1, 2, 1, 1, 0, chkEnvioMensage);
+                                    d_PanelGroup.AddComponet(1, 3, 1, 1, 0, btnEnviarCorreo);
+
+                                    envioCorreoInternal.AddFrameToBody(d_PanelGroup);
+                                    envioCorreoInternal.ShowFrame();
+                                    btnEnviarCorreo.addActionListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            EventQueue.invokeLater(() -> {
+                                                EnvioCorreo(Integer.parseInt(button.getHiddenValue()));
+                                            });
+
+                                        }
+                                    });
+                                    internalFrameLayout.addShowInternalFrame(internalFrameLayout.getDesktopPanePrincipal(), envioCorreoInternal);
+                                } catch (Exception ex) {
+                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+
+                                //
                             }
                         }
                     }
@@ -943,14 +995,36 @@ public class ReporteInternal extends D_InternalFrameLayout {
     private void EnvioCorreo(int IdCabecera) {
         final Thread t;
         t = new Thread(() -> {
-            String username = "cristhiang343@gmail.com";  //Para la dirección nomcuenta@gmail.com
-            String password = "Daniel@84";
-            Properties props = System.getProperties();
 
+            CorreoBeans correos = null;
+            try {
+                correos = correoModel.ObtieneCorreo(Singletoon.getInstance().usuario.getId_usuario());
+            } catch (SQLException ex) {
+                Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (correos == null) {
+                JOptionPane.showConfirmDialog(null, "Ocurrio un Problema al enviar el Correo Asegure que este conectado a la Base de Datos", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String username = correos.getCorreo_envio();  //Para la dirección nomcuenta@gmail.com
+            String password = correos.getContraseña_envio();
+            String recepcionCorreo = correos.getCorreo_recepcion();
+            String asunto = txtAsunto.getText();
+            String mensaje;
+            if (chkEnvioMensage.isSelected()) {
+                mensaje = correos.getMensaje_programado();
+            } else {
+                mensaje = txtEnvioMensageCorreo.getText().trim();
+            }
+
+            Properties props = System.getProperties();
+            Date fecha = new Date();
+            String fechaCadena = new SimpleDateFormat("yyyy-MM-dd").format(fecha);
+            String titulomensaje = "ATENCIÓN " + fechaCadena + " : DR(A) " + Singletoon.getInstance().usuario.getNombre().toUpperCase() + "";
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.user", "cristhiang343@gmail.com");
-            props.put("mail.smtp.password", "Daniel@84");
+            props.put("mail.smtp.user", username);
+            props.put("mail.smtp.password", password);
             props.put("mail.smtp.port", "587");
             props.put("mail.smtp.auth", "true");
 
@@ -966,11 +1040,13 @@ public class ReporteInternal extends D_InternalFrameLayout {
                         List<DetalleReporteBeans> listaDetalle = reporteModel.listaDetalleReporte(id_cabecera);
                         if (listaDetalle.size() > 0) {
                             MimeMessage message = new MimeMessage(session);
-                            message.setFrom(new InternetAddress("cristhiang343@gmail.com"));
-                            message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("milaamumu@gmail.com,cristhiang343@gmail.com,cgomez@tecnologiatextil.com"));
-                            message.setSubject("Mensaje de cristhian ");
+                            message.setFrom(new InternetAddress(username));
+                            message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recepcionCorreo));
+                            message.setSubject(asunto);
                             String tr = "";
-                            String table = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /><meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1' /><head><body><table cellspacing='0' cellpadding='0' dir='ltr' border='1' style='table-layout:fixed;font-size:10pt;font-family:Calibri;width:0px;border-collapse:collapse;border:none'>"
+                            String table = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /><meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1' /><head><body>"
+                                    + " <p>" + mensaje + " </p><br/><br/>"
+                                    + "<table cellspacing='0' cellpadding='0' dir='ltr' border='1' style='table-layout:fixed;font-size:10pt;font-family:Calibri;width:0px;border-collapse:collapse;border:none'>"
                                     + "<colgroup>"
                                     + "<col width='225'>"
                                     + "<col width='121'>"
@@ -989,7 +1065,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     + "</colgroup>"
                                     + "<tbody>"
                                     + "<tr style='height:21px'>"
-                                    + "<td style='border:1px solid rgb(0,0,0);overflow:hidden;padding:0px 3px;vertical-align:bottom;font-size:11pt;font-weight:bold;color:rgb(0,0,0)' rowspan='1' colspan='8'>ATENCIÓN 22 DE JUNIO DEL 2020 : DRA VALENTIN LAZOn ALIAS(CONEJA)</td>"
+                                    + "<td style='border:1px solid rgb(0,0,0);overflow:hidden;padding:0px 3px;vertical-align:bottom;font-size:11pt;font-weight:bold;color:rgb(0,0,0)' rowspan='1' colspan='8'>" + titulomensaje + "</td>"
                                     + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
                                     + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
                                     + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
@@ -1013,6 +1089,26 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>TIPO<br>(ATENCIÒN / SEGUIMIENTO DE CASOS)</td>"
                                     + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>TIPO (PRESENCIAL / VIRTUAL)</td>"
                                     + "</tr>";
+                            String consulta = "";
+                            String detalletitulo = "";
+                            String accion = "";
+                            String diagnostico = "";
+                            for (int i = 0; i < listaDetalle.size(); i++) {
+                                DetalleReporteBeans detalle = listaDetalle.get(i);
+                                if (detalle.getConsulta().length() > 0) {
+                                    consulta += detalle.getConsulta() + "<br/>";
+                                }
+                                if (detalle.getDetalle().length() > 0) {
+                                    detalletitulo += detalle.getDetalle() + "<br/>";
+                                }
+                                if (detalle.getAcción().length() > 0) {
+                                    accion += detalle.getAcción() + "<br/>";
+                                }
+                                if (detalle.getDiacnostico().length() > 0) {
+                                    diagnostico += detalle.getDiacnostico() + "<br/>";
+                                }
+
+                            }
                             for (int i = 0; i < listaDetalle.size(); i++) {
                                 DetalleReporteBeans detalle = listaDetalle.get(i);
                                 if (i == 0) {
@@ -1021,10 +1117,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getCargo() + "</div></td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getConfinadoDonde() + "</div></td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getSede() + "</div></td>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getConsulta() + "</td>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDetalle() + "</td>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getAcción() + "</td>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDiacnostico() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center' rowspan='" + listaDetalle.size() + "'>" + consulta + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center' rowspan='" + listaDetalle.size() + "'>" + detalletitulo + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center' rowspan='" + listaDetalle.size() + "'>" + accion + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center' rowspan='" + listaDetalle.size() + "'>" + diagnostico + "</td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getMedicación() + "</td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getFrecuencia() + "</td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDias() + "</td>"
@@ -1035,10 +1131,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                 } else {
                                     tr += "</tr>"
                                             + "<tr style='height:21px'>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getConsulta() + "</td>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDetalle() + "</td>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getAcción() + "</td>"
-                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDiacnostico() + "</td>"
+                                            //                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getConsulta() + "</td>"
+                                            //                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDetalle() + "</td>"
+                                            //                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getAcción() + "</td>"
+                                            //                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDiacnostico() + "</td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getMedicación() + "</td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getFrecuencia() + "</td>"
                                             + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDias() + "</td>"
@@ -1051,9 +1147,13 @@ public class ReporteInternal extends D_InternalFrameLayout {
 
                             message.setContent(table, "text/html");
                             try (Transport transport = session.getTransport("smtp")) {
-                                transport.connect("cristhiang343@gmail.com", "Daniel@84");
-                                transport.isConnected();
+                                transport.connect(username, password);
+                                if (!transport.isConnected()) {
+                                    JOptionPane.showConfirmDialog(null, "Hubo un problema al Enviar el Correo asegurece que este conectado al Internet.", "Envio Correo", JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 transport.sendMessage(message, message.getAllRecipients());
+                                JOptionPane.showMessageDialog(null, "Se envio el correo Correctamente");
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "Hubo un Problema al Obtener del Detalle del Reporte.");
@@ -1062,7 +1162,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                         JOptionPane.showMessageDialog(null, "No se Encontro el Reporte.");
                     }
                 } catch (MessagingException me) {
-                    JOptionPane.showMessageDialog(null, "Error: "+ me.getMessage());
+                    JOptionPane.showMessageDialog(null, "Error: " + me.getMessage());
                 } catch (SQLException ex) {
                     Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -1228,7 +1328,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
         filters.setControlName(new D_Label("Consulta:", Color.black, true));
 
         txtConsultaDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        txtConsultaDetalle.setPreferredSize(new Dimension(150, 30));
+        txtConsultaDetalle.setPreferredSize(new Dimension(250, 30));
         txtConsultaDetalle.setText(consulta);
         filters.setTypeControl(txtConsultaDetalle);
         listaFiltroDetalle.add(filters);
@@ -1236,7 +1336,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
         filters = new D_ControlsObject();
         filters.setControlName(new D_Label("Detalle:", Color.black, true));
         txtDetalleDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        txtDetalleDetalle.setPreferredSize(new Dimension(150, 30));
+        txtDetalleDetalle.setPreferredSize(new Dimension(250, 30));
         txtDetalleDetalle.setText(detalle);
         filters.setTypeControl(txtDetalleDetalle);
         listaFiltroDetalle.add(filters);
@@ -1244,7 +1344,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
         filters = new D_ControlsObject();
         filters.setControlName(new D_Label("Acción:", Color.black, true));
         txtAccionDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        txtAccionDetalle.setPreferredSize(new Dimension(150, 30));
+        txtAccionDetalle.setPreferredSize(new Dimension(250, 30));
         txtAccionDetalle.setText(accion);
         filters.setTypeControl(txtAccionDetalle);
         listaFiltroDetalle.add(filters);
@@ -1252,7 +1352,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
         filters = new D_ControlsObject();
         filters.setControlName(new D_Label("Diagnostico:", Color.black, true));
         txtDiagnosticoDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        txtDiagnosticoDetalle.setPreferredSize(new Dimension(150, 30));
+        txtDiagnosticoDetalle.setPreferredSize(new Dimension(250, 30));
         txtDiagnosticoDetalle.setText(diagnostico);
         filters.setTypeControl(txtDiagnosticoDetalle);
         listaFiltroDetalle.add(filters);
@@ -1260,7 +1360,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
         filters = new D_ControlsObject();
         filters.setControlName(new D_Label("Medicación:", Color.black, true));
         txtMedicacionDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        txtMedicacionDetalle.setPreferredSize(new Dimension(150, 30));
+        txtMedicacionDetalle.setPreferredSize(new Dimension(170, 30));
         txtMedicacionDetalle.setText(medicacion);
         filters.setTypeControl(txtMedicacionDetalle);
         listaFiltroDetalle.add(filters);
@@ -1684,7 +1784,6 @@ public class ReporteInternal extends D_InternalFrameLayout {
             @Override
             public void actionPerformed(ActionEvent e
             ) {
-                System.out.println(".actionPerformed()");
                 try {
                     D_InternalFrameLayout frameLayout = new D_InternalFrameLayout(internal, 500, 400, false);
                     frameLayout.BackgroundColor(new Color(52, 202, 188));
@@ -1696,42 +1795,42 @@ public class ReporteInternal extends D_InternalFrameLayout {
                     filters.setControlName(new D_Label("Consulta:", Color.black, true));
 
                     txtConsultaDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtConsultaDetalle.setPreferredSize(new Dimension(200, 30));
+                    txtConsultaDetalle.setPreferredSize(new Dimension(250, 30));
                     filters.setTypeControl(txtConsultaDetalle);
                     listaFiltroDetalle.add(filters);
 
                     filters = new D_ControlsObject();
                     filters.setControlName(new D_Label("Detalle:", Color.black, true));
                     txtDetalleDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtDetalleDetalle.setPreferredSize(new Dimension(200, 30));
+                    txtDetalleDetalle.setPreferredSize(new Dimension(250, 30));
                     filters.setTypeControl(txtDetalleDetalle);
                     listaFiltroDetalle.add(filters);
 
                     filters = new D_ControlsObject();
                     filters.setControlName(new D_Label("Acción:", Color.black, true));
                     txtAccionDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtAccionDetalle.setPreferredSize(new Dimension(200, 30));
+                    txtAccionDetalle.setPreferredSize(new Dimension(250, 30));
                     filters.setTypeControl(txtAccionDetalle);
                     listaFiltroDetalle.add(filters);
 
                     filters = new D_ControlsObject();
                     filters.setControlName(new D_Label("Diagnostico:", Color.black, true));
                     txtDiagnosticoDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtDiagnosticoDetalle.setPreferredSize(new Dimension(200, 30));
+                    txtDiagnosticoDetalle.setPreferredSize(new Dimension(250, 30));
                     filters.setTypeControl(txtDiagnosticoDetalle);
                     listaFiltroDetalle.add(filters);
 
                     filters = new D_ControlsObject();
                     filters.setControlName(new D_Label("Medicación:", Color.black, true));
                     txtMedicacionDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtMedicacionDetalle.setPreferredSize(new Dimension(200, 30));
+                    txtMedicacionDetalle.setPreferredSize(new Dimension(180, 30));
                     filters.setTypeControl(txtMedicacionDetalle);
                     listaFiltroDetalle.add(filters);
 
                     filters = new D_ControlsObject();
                     filters.setControlName(new D_Label("Frecuencia:", Color.black, true));
                     txtFrecuenciaDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtFrecuenciaDetalle.setPreferredSize(new Dimension(200, 30));
+                    txtFrecuenciaDetalle.setPreferredSize(new Dimension(180, 30));
                     filters.setTypeControl(txtFrecuenciaDetalle);
                     listaFiltroDetalle.add(filters);
 

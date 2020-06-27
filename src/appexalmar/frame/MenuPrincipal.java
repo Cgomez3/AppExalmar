@@ -51,7 +51,7 @@ public class MenuPrincipal extends D_FrameLayout {
     private void Configuration() throws Exception {
         this.BackgroundColor(new Color(52,202,188));
 
-        this.EnableMenu(true, AddMenu(), new D_Label("Reporte Exalmar", Color.white, true));
+        this.EnableMenu(true, AddMenu(), new D_Label("BIENVENIDO: "+Singletoon.getInstance().usuario.getNombre()+" Al Registro de llamadas Exalmar", Color.white, true));
         this.EnableformularyWatch();
         this.AddformularyVersion(Singletoon.version);
         this.AddformularyAutor(Singletoon.autor, Color.yellow);

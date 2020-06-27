@@ -39,7 +39,7 @@ public class UsuaroModel implements IUsuario {
     @Override
     public UsuarioBeans ObtieneUsuario(UsuarioBeans usuario) throws SQLException {
         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        String consulta = "SELECT NOMBRES, USUARIO, CLAVE FROM USUARIOS WHERE USUARIO= '" + usuario.getUsuario() + "' AND CLAVE= '" + usuario.getClave()+"'";
+        String consulta = "SELECT NOMBRES, USUARIO, CLAVE , IDUSUARIOS FROM USUARIOS WHERE USUARIO= '" + usuario.getUsuario() + "' AND CLAVE= '" + usuario.getClave()+"'";
         resultSet = statement.executeQuery(consulta);
         UsuarioBeans usuarioloc = null;
         while (resultSet.next()) {
@@ -47,6 +47,7 @@ public class UsuaroModel implements IUsuario {
             usuarioloc.setNombre(resultSet.getString("NOMBRES"));
             usuarioloc.setUsuario(resultSet.getString("USUARIO"));
             usuarioloc.setClave(resultSet.getString("CLAVE"));
+            usuarioloc.setId_usuario(resultSet.getInt("IDUSUARIOS"));
 
         }
         conexion.CloseSql();
