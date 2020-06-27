@@ -904,66 +904,14 @@ public class ReporteInternal extends D_InternalFrameLayout {
                             }
                             if (button.getName().equals("I")) {
                                 // Esto es lo que va delante de @gmail.com en tu cuenta de correo. Es el remitente también.
-                                String username = "cristhiang343@gmail.com";  //Para la dirección nomcuenta@gmail.com
-                                String password = "Daniel@84";
-                                Properties props = System.getProperties();
-
-                                props.put("mail.smtp.starttls.enable", "true");
-                                props.put("mail.smtp.host", "smtp.gmail.com");
-                                props.put("mail.smtp.user", "cristhiang343@gmail.com");
-                                props.put("mail.smtp.password", "Daniel@84");
-                                props.put("mail.smtp.port", "587");
-                                props.put("mail.smtp.auth", "true");
-
-                                Session session = Session.getDefaultInstance(props);
-                                session.setDebug(true);
-
-                                EventQueue.invokeLater(() -> {
-                                    try {
-                                        //https://myaccount.google.com/security
-                                        MimeMessage message = new MimeMessage(session);
-                                        message.setFrom(new InternetAddress("cristhiang343@gmail.com"));
-                                        message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("cristhiang343@gmail.com"));
-                                        message.setSubject("Prueba");
-                                        String table = "<table border ='1'>"
-                                                + "<tr><td colspan='14'>ATENCIÓN 22 DE JUNIO DEL 2020 : DRA VALENTIN LAZO</td><tr/>"
-                                                + "<tr>"
-                                                + "<td style='background-color:rgb(68,114,196)'>APELLIDOS Y NOMBRES</td>"
-                                                + "<td>CARGO</td>"
-                                                + "<td>CONFINADO <br/>/ DONDE</td>"
-                                                + "<td>SEDE</td>"
-                                                + "<td>CONSULTA</td>"
-                                                + "<td>DETALLE</td>"
-                                                + "<td>ACCIÓN</td>"
-                                                + "<td>DIAGNOSTICO</td>"
-                                                + "<td>MEDICAMENTO</td>"
-                                                + "<td>FRECUENCIA</td>"
-                                                + "<td>DIAS</td>"
-                                                + "<td>CANTIDAD <br/>TOTAL</td>"
-                                                + "<td>TIPO <br/>(ATENCIÓN <br/>/ SEGUIMIENTO <br/>DE CASOS)</td>"
-                                                + "<td>TIPO <br/>(PRESENCIAL/<br/>VISTUAL)</td>"
-                                                + "<tr/>"
-                                                + "</table>";
-                                        message.setText(table, "ISO-8859-1", "html");
-                                        try (Transport transport = session.getTransport("smtp")) {
-                                            transport.connect("cristhiang343@gmail.com", "Daniel@84");
-                                            transport.sendMessage(message, message.getAllRecipients());
-                                        }
-                                    } catch (MessagingException me) {
-                                        System.out.println("Error:>> " + me.getMessage());
-                                        //Aqui se deberia o mostrar un mensaje de error o en lugar
-                                        //de no hacer nada con la excepcion, lanzarla para que el modulo
-                                        //superior la capture y avise al usuario con un popup, por ejemplo.
-                                        return;
-                                    }
-                                });
-
+                                EnvioCorreo(Integer.parseInt(button.getHiddenValue()));
                             }
                         }
                     }
                 }
 
                 @Override
+
                 public void mousePressed(MouseEvent e) {
 
                 }
@@ -982,13 +930,146 @@ public class ReporteInternal extends D_InternalFrameLayout {
                 public void mouseExited(MouseEvent e) {
 
                 }
-            });
+            }
+            );
             table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         } catch (SQLException ex) {
             Logger.getLogger(ReporteInternal.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void EnvioCorreo(int IdCabecera) {
+        final Thread t;
+        t = new Thread(() -> {
+            String username = "cristhiang343@gmail.com";  //Para la dirección nomcuenta@gmail.com
+            String password = "Daniel@84";
+            Properties props = System.getProperties();
+
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.user", "cristhiang343@gmail.com");
+            props.put("mail.smtp.password", "Daniel@84");
+            props.put("mail.smtp.port", "587");
+            props.put("mail.smtp.auth", "true");
+
+            Session session = Session.getDefaultInstance(props);
+            session.setDebug(true);
+
+            EventQueue.invokeLater(() -> {
+                try {
+                    //https://myaccount.google.com/security
+                    int id_cabecera = IdCabecera;
+                    ReporteCabeceraBeans reporte = reporteModel.ObtieneReporte(id_cabecera);
+                    if (reporte != null) {
+                        List<DetalleReporteBeans> listaDetalle = reporteModel.listaDetalleReporte(id_cabecera);
+                        if (listaDetalle.size() > 0) {
+                            MimeMessage message = new MimeMessage(session);
+                            message.setFrom(new InternetAddress("cristhiang343@gmail.com"));
+                            message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("milaamumu@gmail.com,cristhiang343@gmail.com,cgomez@tecnologiatextil.com"));
+                            message.setSubject("Mensaje de cristhian ");
+                            String tr = "";
+                            String table = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /><meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1' /><head><body><table cellspacing='0' cellpadding='0' dir='ltr' border='1' style='table-layout:fixed;font-size:10pt;font-family:Calibri;width:0px;border-collapse:collapse;border:none'>"
+                                    + "<colgroup>"
+                                    + "<col width='225'>"
+                                    + "<col width='121'>"
+                                    + "<col width='117'>"
+                                    + "<col width='74'>"
+                                    + "<col width='203'>"
+                                    + "<col width='215'>"
+                                    + "<col width='103'>"
+                                    + "<col width='120'>"
+                                    + "<col width='299'>"
+                                    + "<col width='139'>"
+                                    + "<col width='138'>"
+                                    + "<col width='138'>"
+                                    + "<col width='157'>"
+                                    + "<col width='116'>"
+                                    + "</colgroup>"
+                                    + "<tbody>"
+                                    + "<tr style='height:21px'>"
+                                    + "<td style='border:1px solid rgb(0,0,0);overflow:hidden;padding:0px 3px;vertical-align:bottom;font-size:11pt;font-weight:bold;color:rgb(0,0,0)' rowspan='1' colspan='8'>ATENCIÓN 22 DE JUNIO DEL 2020 : DRA VALENTIN LAZOn ALIAS(CONEJA)</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:bottom'></td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(0,0,0) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top'></td>"
+                                    + "</tr>"
+                                    + "<tr style='height:21px'>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>APELLIDOS Y NOMBRES</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>CARGO</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>CONFINADO<br> / DONDE</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>SEDE</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>CONSULTA</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>DETALLE</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>ACCIÒN</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>DIAGNOSTICO</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>MEDICAMENTO</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>FRECUENCIA</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>DIAS</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>CANTIDAD TOTAL</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>TIPO<br>(ATENCIÒN / SEGUIMIENTO DE CASOS)</td>"
+                                    + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;background-color:rgb(68,114,196);font-family:Arial;font-size:12pt;font-weight:bold;color:rgb(255,255,255);text-align:center'>TIPO (PRESENCIAL / VIRTUAL)</td>"
+                                    + "</tr>";
+                            for (int i = 0; i < listaDetalle.size(); i++) {
+                                DetalleReporteBeans detalle = listaDetalle.get(i);
+                                if (i == 0) {
+                                    tr += "<tr style='height:21px'>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getApe_nom() + "</div></td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getCargo() + "</div></td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getConfinadoDonde() + "</div></td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getSede() + "</div></td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getConsulta() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDetalle() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getAcción() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDiacnostico() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getMedicación() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getFrecuencia() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDias() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getCanntidadTotal() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getTipo_atencion() + "</div></td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top' rowspan='" + listaDetalle.size() + "' colspan='1'><div style='max-height:84px'>" + reporte.getTipo_presencial() + "</div></td>"
+                                            + "</tr>";
+                                } else {
+                                    tr += "</tr>"
+                                            + "<tr style='height:21px'>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getConsulta() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDetalle() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getAcción() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDiacnostico() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getMedicación() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getFrecuencia() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getDias() + "</td>"
+                                            + "<td style='border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:0px 3px;vertical-align:top;font-family:Arial;color:rgb(0,0,0);text-align:center'>" + detalle.getCanntidadTotal() + "</td>"
+                                            + "</tr>";
+                                }
+                            }
+                            table += tr;
+                            table += "</tbody></table></body></html>";
+
+                            message.setContent(table, "text/html");
+                            try (Transport transport = session.getTransport("smtp")) {
+                                transport.connect("cristhiang343@gmail.com", "Daniel@84");
+                                transport.isConnected();
+                                transport.sendMessage(message, message.getAllRecipients());
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Hubo un Problema al Obtener del Detalle del Reporte.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No se Encontro el Reporte.");
+                    }
+                } catch (MessagingException me) {
+                    JOptionPane.showMessageDialog(null, "Error: "+ me.getMessage());
+                } catch (SQLException ex) {
+                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+
+        });
+        t.start();
     }
 
     public List<int[]> AnchoColunaDetalle() {

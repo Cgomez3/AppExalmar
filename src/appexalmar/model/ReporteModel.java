@@ -88,6 +88,56 @@ public class ReporteModel implements IReporte {
         conexion.CloseSql();
         return listaReportes;
     }
+    
+    @Override
+    public ReporteCabeceraBeans ObtieneReporte(int idcabecera) throws SQLException {
+        statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        resultSet = statement.executeQuery("SELECT * FROM reporte_cabecera WHERE id_cabecera=" + idcabecera);
+        ReporteCabeceraBeans reporteBeans=null;
+        while (resultSet.next()) {
+            reporteBeans = new ReporteCabeceraBeans();
+            D_Button btnEditar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "E", "");
+            btnEditar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
+            D_Button btnAgregar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("addsi.png")), "G", "");
+            btnAgregar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
+            D_Button btnEnviar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("email.png")), "I", "");
+            btnEnviar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
+            reporteBeans.setBtnEditar(btnEditar);
+            reporteBeans.setBtnGrabar(btnAgregar);
+            reporteBeans.setBtnEnviar(btnEnviar);
+            reporteBeans.setNumero(resultSet.getInt("numero"));
+            java.util.Date fecha = resultSet.getDate("fecha");
+            reporteBeans.setFecha(new SimpleDateFormat("dd-MM-yyyy").format(fecha));
+            reporteBeans.setHora(resultSet.getString("hora"));
+            reporteBeans.setCelular(resultSet.getString("celular"));
+            reporteBeans.setLocalidadDomicilio(resultSet.getString("localidad_domicilio"));
+            reporteBeans.setEp(resultSet.getString("ep"));
+            String codsap = resultSet.getString("cod_sap");
+            if (codsap.isEmpty()) {
+                codsap = "0";
+            }
+            PersonalExalmarBeans personal = personaModel.ObtinePersona(codsap);
+            if (personal != null) {
+                reporteBeans.setDni(personal.getDni());
+                reporteBeans.setApe_nom(personal.getApellidosNombres());
+                reporteBeans.setCargo(personal.getCargo());
+            }
+            reporteBeans.setConfinadoDonde(resultSet.getString("confinado_donde"));
+            reporteBeans.setSede(resultSet.getString("sede"));
+            reporteBeans.setTipo_atencion(resultSet.getString("tipo_atencion_seguimiento"));
+            reporteBeans.setTipo_presencial(resultSet.getString("tipo_presencial_virtual"));
+            reporteBeans.setMedico(resultSet.getString("medico"));
+            reporteBeans.setEmvSINO(resultSet.getString("alerta"));
+            if (personal != null) {
+                reporteBeans.setCodsap(personal.getCodsap());
+                reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
+                reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
+                reporteBeans.setCategoria(personal.getCatgoria());
+            }
+        }
+        conexion.CloseSql();
+        return reporteBeans;
+    }
 
     @Override
     public Object[] listaReporte(int idCabecera) throws SQLException {

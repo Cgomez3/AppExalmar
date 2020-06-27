@@ -43,3 +43,25 @@ CREATE TABLE `reporte_detalle` (
   PRIMARY KEY (`id_detalle`),
   KEY `id_cabecera_idx` (`id_cabecera`)
 ) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `correo` (
+  `idcorreo` int NOT NULL,
+  `correo_envio` varchar(200) DEFAULT NULL,
+  `correo_recepcion` varchar(200) DEFAULT NULL,
+  `contrasenia_envio` varchar(45) DEFAULT NULL,
+  `asunto` varchar(80) DEFAULT NULL,
+  `mensaje_programado` varchar(500) DEFAULT NULL,
+  `id_usuario` int DEFAULT NULL,
+  PRIMARY KEY (`idcorreo`),
+  KEY `idusuarios_idx` (`id_usuario`),
+  CONSTRAINT `idusuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`idusuarios`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `usuarios` (
+  `idusuarios` int NOT NULL,
+  `nombres` varchar(200) DEFAULT NULL,
+  `usuario` varchar(90) DEFAULT NULL,
+  `clave` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`idusuarios`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

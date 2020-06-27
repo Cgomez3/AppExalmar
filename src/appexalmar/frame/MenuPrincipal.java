@@ -19,6 +19,7 @@ import Api.swing.frameword.controles.D_ScrollPane;
 import Api.swing.frameword.controles.D_TextArea;
 import Api.swing.frameword.controles.D_TextField;
 import Api.swing.frameword.frame.D_FrameLayout;
+import appexalmar.bean.Singletoon;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.HeadlessException;
@@ -52,8 +53,8 @@ public class MenuPrincipal extends D_FrameLayout {
 
         this.EnableMenu(true, AddMenu(), new D_Label("Reporte Exalmar", Color.white, true));
         this.EnableformularyWatch();
-        this.AddformularyVersion("0.2.0");
-        this.AddformularyAutor("Cristhian gomez", Color.yellow);
+        this.AddformularyVersion(Singletoon.version);
+        this.AddformularyAutor(Singletoon.autor, Color.yellow);
         this.AddFooterControls(null, new Color(52,202,188), 1, Color.PINK);
 
 //        List<D_ControlsObject> listaFiltros = new ArrayList<>();

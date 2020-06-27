@@ -5,6 +5,7 @@
  */
 package appexalmar;
 
+import appexalmar.frame.LoginInFrame;
 import appexalmar.frame.MenuPrincipal;
 import java.awt.EventQueue;
 
@@ -21,12 +22,13 @@ public class AppExalmar {
 
         EventQueue.invokeLater(() -> {
             try {
-                MenuPrincipal menuPrincipal = new MenuPrincipal(1200, 700, true);
-                menuPrincipal.ShowFrame();                
+                LoginInFrame frame=new LoginInFrame(400,215, false);
+                frame.ShowFrame();
                 System.out.println("appexalmar.AppExalmar.main()");
                 
                 
             } catch (Exception e) {
+                System.out.println("Error: "+ e.getMessage());
             }
         });
 

@@ -28,4 +28,5 @@ public interface IReporte {
     Integer ObtenerNumero()throws SQLException;    
     void ActualizarReporte(TableReporteBean reporteBean,int id_cabecera) throws SQLException;
     void EliminaDetalleReporte(int id_cabecera) throws SQLException;
+    ReporteCabeceraBeans ObtieneReporte(int idcabecera) throws SQLException ;
 }
