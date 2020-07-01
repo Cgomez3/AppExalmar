@@ -63,6 +63,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
     private D_Table table = new D_Table();
     private String titleHeader[];
     private ReporteModel reporteModel = new ReporteModel();
+    private PersonaModel personalModel = new PersonaModel();
     private static D_ProgressBar progreso;
     private static D_Button btnCargar;
     private static D_Button btnArchivo;
@@ -112,14 +113,14 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         listaFamiliaFiltros.add(listaFiltros);
 
         listaFiltros = new ArrayList<>();
-        btnArchivo = new D_Button(1,10,D_Button.TypeButton.ROUNDED_CORNER, "Archivo", Color.BLACK);
+        btnArchivo = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "Archivo", Color.BLACK);
         filters = new D_ControlsObject();
         filters.setControlName(btnArchivo);
         listaFiltros.add(filters);
 
         listaFamiliaFiltros.add(listaFiltros);
         listaFiltros = new ArrayList<>();
-        btnCargar = new D_Button(1,10,D_Button.TypeButton.ROUNDED_CORNER, "Cargar", Color.BLACK);
+        btnCargar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "Cargar", Color.BLACK);
         filters = new D_ControlsObject();
         filters.setControlName(btnCargar);
         listaFiltros.add(filters);
@@ -165,7 +166,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         btnArchivo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 CargarExcel();
             }
 
@@ -214,174 +215,187 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                         XSSFSheet hoja = libro.getSheetAt(Integer.parseInt(txthoja.getText()) - 1);
                         XSSFRow fila;
                         XSSFCell columna;
-                        TableReporteBean personalExalmar = new TableReporteBean();
+                        XSSFRow fila_temp;
+                        XSSFCell columna_temp;
+                        XSSFRow fila_temp2;
+                        XSSFCell columna_temp2;
+                        TableReporteBean reporteCabecera = new TableReporteBean();
                         TableDetalleReporteBeans detalleReporteBeans = new TableDetalleReporteBeans();
                         int flagExisteCabecera = 0;
 //                            Iterator<Row> iterator = hoja.iterator();
+                        int contador = 0;
+                        int flag = 0;
+                        int filas=0;
                         for (int i = 0; i < hoja.getLastRowNum(); i++) {
                             fila = hoja.getRow(i);
-                            if (fila != null) {
-                                if (i == 0) {
-                                    titleHeader = new String[13];
-                                    titleHeader[0] = fila.getCell(0).getStringCellValue();
-                                    titleHeader[1] = fila.getCell(1).getStringCellValue();
-                                    titleHeader[2] = fila.getCell(2).getStringCellValue();
-                                    titleHeader[3] = fila.getCell(3).getStringCellValue();
-                                    titleHeader[4] = fila.getCell(4).getStringCellValue();
-                                    titleHeader[5] = fila.getCell(9).getStringCellValue();
-                                    titleHeader[6] = fila.getCell(10).getStringCellValue();
-                                    titleHeader[7] = fila.getCell(5).getStringCellValue();
-                                    titleHeader[8] = fila.getCell(19).getStringCellValue();
-                                    titleHeader[9] = fila.getCell(20).getStringCellValue();
-                                    titleHeader[10] = fila.getCell(21).getStringCellValue();
-                                    titleHeader[11] = fila.getCell(23).getStringCellValue();
-                                    titleHeader[12] = fila.getCell(24).getStringCellValue();
+                            columna = fila.getCell(0);
+                            if (i == 0) {
+                                titleHeader = new String[16];
+                                titleHeader[0] = fila.getCell(0).getStringCellValue();
+                                titleHeader[1] = fila.getCell(1).getStringCellValue();
+                                titleHeader[2] = fila.getCell(2).getStringCellValue();
+                                titleHeader[3] = fila.getCell(3).getStringCellValue();
+                                titleHeader[4] = fila.getCell(4).getStringCellValue();
+                                titleHeader[5] = fila.getCell(5).getStringCellValue();
+                                titleHeader[6] = fila.getCell(6).getStringCellValue();
+                                titleHeader[7] = fila.getCell(7).getStringCellValue();
+                                titleHeader[8] = fila.getCell(8).getStringCellValue();
+                                titleHeader[9] = fila.getCell(9).getStringCellValue();
+                                titleHeader[10] = fila.getCell(10).getStringCellValue();
+                                titleHeader[11] = fila.getCell(19).getStringCellValue();
+                                titleHeader[12] = fila.getCell(20).getStringCellValue();
+                                titleHeader[13] = fila.getCell(21).getStringCellValue();
+                                titleHeader[14] = fila.getCell(23).getStringCellValue();
+                                titleHeader[15] = fila.getCell(24).getStringCellValue();
 
-                                } else {
+                            } else {
+                                
+                                if (!ObtenerValorExcel(columna).isEmpty()) {
+                                    flag = 0;
+                                    filas = 1;
+                                    System.out.println(">> " + ObtenerValorExcel(columna));
+                                    boolean termina = true;
+                                    int count = i + 1;
 
-                                    columna = fila.getCell(0);
-
-                                    if (columna != null) {
-
-                                        if (columna.getNumericCellValue() > 0) {
-                                            flagExisteCabecera = 1;
-                                            if (listaDetalle.size() > 0) {
-                                                personalExalmar.setListaDetalle(listaDetalle);
-                                                listaReporte.add(personalExalmar);
-                                            }
-                                            personalExalmar = new TableReporteBean();
-                                            detalleReporteBeans = new TableDetalleReporteBeans();
-                                            listaDetalle = new ArrayList<>();
-
-                                            personalExalmar.setNumero((int) columna.getNumericCellValue());
-
-                                            columna = fila.getCell(1);
-                                            Date fini = columna.getDateCellValue();
-                                            if (fini != null) {
-                                                personalExalmar.setFecha(new SimpleDateFormat("yyyy-MM-dd").format(fini));
-                                            }
-
-                                            columna = fila.getCell(2);
-                                            if (DateUtil.isCellDateFormatted(columna)) {
-                                                personalExalmar.setHora(new SimpleDateFormat("HH:mm").format(DateUtil.getJavaDate(columna.getNumericCellValue())));
-                                            }
-                                            columna = fila.getCell(3);
-                                            personalExalmar.setCelular(columna.getStringCellValue());
-
-                                            columna = fila.getCell(4);
-                                            personalExalmar.setLocalidadDomicilio(columna.getStringCellValue());
-
-                                            columna = fila.getCell(9);
-                                            personalExalmar.setConfinadoDonde(columna.getStringCellValue());
-
-                                            columna = fila.getCell(10);
-                                            personalExalmar.setSede(columna.getStringCellValue());
-
-                                            columna = fila.getCell(5);
-                                            personalExalmar.setEp(columna.getStringCellValue());
-
-                                            //Detalle
-                                            columna = fila.getCell(11);
-                                            detalleReporteBeans.setConsulta(columna.getStringCellValue());
-
-                                            columna = fila.getCell(12);
-                                            detalleReporteBeans.setDetalle(columna.getStringCellValue());
-
-                                            columna = fila.getCell(13);
-                                            detalleReporteBeans.setAcción(columna.getStringCellValue());
-
-                                            columna = fila.getCell(14);
-
-                                            detalleReporteBeans.setDiacnostico(columna.getStringCellValue());
-
-                                            columna = fila.getCell(15);
-                                            detalleReporteBeans.setMedicación(columna.getStringCellValue());
-
-                                            columna = fila.getCell(16);
-                                            detalleReporteBeans.setFrecuencia(columna.getStringCellValue());
-
-                                            columna = fila.getCell(17);
-                                            detalleReporteBeans.setDias(columna.getStringCellValue());
-
-                                            columna = fila.getCell(18);
-                                            detalleReporteBeans.setCanntidadTotal(columna.getStringCellValue());
-                                            //fin detalle
-
-                                            columna = fila.getCell(19);
-                                            personalExalmar.setTipoAtencionSeguimiento(columna.getStringCellValue());
-
-                                            columna = fila.getCell(20);
-                                            personalExalmar.setTipoPrecencialVirtual(columna.getStringCellValue());
-
-                                            columna = fila.getCell(21);
-                                            personalExalmar.setMedico(columna.getStringCellValue());
-
-                                            columna = fila.getCell(23);
-                                            personalExalmar.setEmvSINO(columna.getStringCellValue());
-
-                                            columna = fila.getCell(24);
-                                            personalExalmar.setCodSap(columna.getStringCellValue());
-
-                                            listaDetalle.add(detalleReporteBeans);
-
+                                    while (termina) {
+                                        fila_temp = hoja.getRow(count);
+                                        columna_temp = fila_temp.getCell(17);
+                                        fila_temp2 = hoja.getRow(count);
+                                        columna_temp2 = fila_temp2.getCell(0);
+//                                        System.out.println("col>>" + columna_temp2.getNumericCellValue());
+//                                        if (columna_temp == null) {
+//                                            System.out.println("appexalmar.frame.ImportarReporteInternal.CargarExcel()");
+//                                        } else {
+                                        if (columna_temp2.getNumericCellValue() > 0 || ObtenerValorExcel(columna_temp).isEmpty()) {
+                                            termina = false;
                                         } else {
-                                            //Detalle
-                                            if (flagExisteCabecera == 1) {
-
-                                                detalleReporteBeans = new TableDetalleReporteBeans();
-                                                columna = fila.getCell(11);
-                                                detalleReporteBeans.setConsulta(columna.getStringCellValue());
-
-                                                columna = fila.getCell(12);
-                                                detalleReporteBeans.setDetalle(columna.getStringCellValue());
-
-                                                columna = fila.getCell(13);
-                                                if(columna != null){
-                                                detalleReporteBeans.setAcción(columna.getStringCellValue());
-                                                }else{
-                                                 detalleReporteBeans.setAcción("");
-                                                }
-                                                columna = fila.getCell(14);
-                                                detalleReporteBeans.setDiacnostico(columna.getStringCellValue());
-
-                                                columna = fila.getCell(15);
-                                                detalleReporteBeans.setMedicación(columna.getStringCellValue());
-
-                                                columna = fila.getCell(16);
-                                                detalleReporteBeans.setFrecuencia(columna.getStringCellValue());
-
-                                                columna = fila.getCell(17);
-                                                detalleReporteBeans.setDias(columna.getStringCellValue());
-
-                                                columna = fila.getCell(18);
-                                                detalleReporteBeans.setCanntidadTotal(columna.getStringCellValue());
-                                                //fin detalle
-                                                int validaData = 0;
-                                                if (!detalleReporteBeans.getConsulta().isEmpty()) {
-                                                    validaData = 1;
-                                                } else if (!detalleReporteBeans.getDetalle().isEmpty()) {
-                                                    validaData = 1;
-                                                } else if (!detalleReporteBeans.getAcción().isEmpty()) {
-                                                    validaData = 1;
-                                                } else if (!detalleReporteBeans.getDiacnostico().isEmpty()) {
-                                                    validaData = 1;
-                                                } else if (!detalleReporteBeans.getMedicación().isEmpty()) {
-                                                    validaData = 1;
-                                                } else if (!detalleReporteBeans.getFrecuencia().isEmpty()) {
-                                                    validaData = 1;
-                                                } else if (!detalleReporteBeans.getDias().isEmpty()) {
-                                                    validaData = 1;
-                                                } else if (!detalleReporteBeans.getCanntidadTotal().isEmpty()) {
-                                                    validaData = 1;
-                                                }
-                                                if (validaData > 0) {
-                                                    listaDetalle.add(detalleReporteBeans);
-                                                }
-                                            }
+                                            filas += 1;
                                         }
+//                                        }
+                                        count += 1;
                                     }
+                                    contador += 1;
+                                    
+                                    reporteCabecera.setNumero(contador);
+                                    columna = fila.getCell(1);
+                                    Date fini = columna.getDateCellValue();
+                                    if (fini != null) {
+                                        reporteCabecera.setFecha(new SimpleDateFormat("yyyy-MM-dd").format(fini));
+                                    } else {
+                                        reporteCabecera.setFecha("");
+                                    }
+
+                                    columna = fila.getCell(2);
+                                    if (DateUtil.isCellDateFormatted(columna)) {
+                                        reporteCabecera.setHora(new SimpleDateFormat("HH:mm").format(DateUtil.getJavaDate(columna.getNumericCellValue())));
+                                    } else {
+                                        reporteCabecera.setHora("");
+                                    }
+                                    columna = fila.getCell(3);
+                                    reporteCabecera.setCelular(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(4);
+                                    reporteCabecera.setLocalidadDomicilio(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(5);
+                                    reporteCabecera.setEp(ObtenerValorExcel(columna));
+                                    
+                                    columna = fila.getCell(6);
+                                    reporteCabecera.setDni(ObtenerValorExcel(columna));
+                                    
+                                    columna = fila.getCell(7);
+                                    reporteCabecera.setApe_nom(ObtenerValorExcel(columna));
+                                    
+                                    columna = fila.getCell(8);
+                                    reporteCabecera.setCargo(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(9);
+                                    reporteCabecera.setConfinadoDonde(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(10);
+                                    reporteCabecera.setSede(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(19);
+                                    reporteCabecera.setTipoAtencionSeguimiento(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(20);
+                                    reporteCabecera.setTipoPrecencialVirtual(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(21);
+                                    reporteCabecera.setMedico(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(23);
+                                    reporteCabecera.setEmvSINO(ObtenerValorExcel(columna));
+
+                                    columna = fila.getCell(24);
+                                    reporteCabecera.setCodSap(ObtenerValorExcel(columna));
                                 }
 
+                                detalleReporteBeans = new TableDetalleReporteBeans();
+                                columna = fila.getCell(11);
+                                detalleReporteBeans.setConsulta(ObtenerValorExcel(columna));
+
+                                columna = fila.getCell(12);
+                                detalleReporteBeans.setDetalle(ObtenerValorExcel(columna));
+
+                                columna = fila.getCell(13);
+                                detalleReporteBeans.setAcción(ObtenerValorExcel(columna));
+
+                                columna = fila.getCell(14);
+
+                                detalleReporteBeans.setDiacnostico(ObtenerValorExcel(columna));
+
+                                columna = fila.getCell(15);
+                                detalleReporteBeans.setMedicación(ObtenerValorExcel(columna));
+
+                                columna = fila.getCell(16);
+                                detalleReporteBeans.setFrecuencia(ObtenerValorExcel(columna));
+
+                                columna = fila.getCell(17);
+                                detalleReporteBeans.setDias(ObtenerValorExcel(columna));
+
+                                columna = fila.getCell(18);
+                                detalleReporteBeans.setCanntidadTotal(ObtenerValorExcel(columna));
+                                
+                                int validaData = 0;
+                                if (!detalleReporteBeans.getConsulta().isEmpty()) {
+                                    validaData = 1;
+                                } else if (!detalleReporteBeans.getDetalle().isEmpty()) {
+                                    validaData = 1;
+                                } else if (!detalleReporteBeans.getAcción().isEmpty()) {
+                                    validaData = 1;
+                                } else if (!detalleReporteBeans.getDiacnostico().isEmpty()) {
+                                    validaData = 1;
+                                } else if (!detalleReporteBeans.getMedicación().isEmpty()) {
+                                    validaData = 1;
+                                } else if (!detalleReporteBeans.getFrecuencia().isEmpty()) {
+                                    validaData = 1;
+                                } else if (!detalleReporteBeans.getDias().isEmpty()) {
+                                    validaData = 1;
+                                } else if (!detalleReporteBeans.getCanntidadTotal().isEmpty()) {
+                                    validaData = 1;
+                                }
+                                if (validaData > 0) {
+                                    listaDetalle.add(detalleReporteBeans);
+                                }
+                                flag += 1;
+                                System.out.println("filas"+filas);
+                                System.out.println("flag"+ flag);
+                                if (filas == flag) {
+                                    reporteCabecera.setListaDetalle(listaDetalle);
+                                    listaReporte.add(reporteCabecera);
+                                    listaDetalle = new ArrayList<>();
+                                    reporteCabecera = new TableReporteBean();
+                                }
+
+//                                if (i == (filas + i)) {
+//                                    listaReporte.add(reporteCabecera);
+//                                    listaDetalle = new ArrayList<>();
+//                                }
+//                                if (!ObtenerValorExcel(columna).isEmpty()) {
+//                                    reporteCabecera.setListaDetalle(listaDetalle);
+//
+//                                }
                             }
                             progreso.setString(String.valueOf(((i + 1) * 100) / hoja.getLastRowNum()).concat("%"));
                             progreso.setValue(((i + 1) * 100) / hoja.getLastRowNum());
@@ -390,8 +404,202 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                             }
-
                         }
+//                        for (int i = 0; i < hoja.getLastRowNum(); i++) {
+//                            fila = hoja.getRow(i);
+////                            if (fila != null) {
+//                            if (i == 0) {
+//                                titleHeader = new String[13];
+//                                titleHeader[0] = fila.getCell(0).getStringCellValue();
+//                                titleHeader[1] = fila.getCell(1).getStringCellValue();
+//                                titleHeader[2] = fila.getCell(2).getStringCellValue();
+//                                titleHeader[3] = fila.getCell(3).getStringCellValue();
+//                                titleHeader[4] = fila.getCell(4).getStringCellValue();
+//                                titleHeader[5] = fila.getCell(9).getStringCellValue();
+//                                titleHeader[6] = fila.getCell(10).getStringCellValue();
+//                                titleHeader[7] = fila.getCell(5).getStringCellValue();
+//                                titleHeader[8] = fila.getCell(19).getStringCellValue();
+//                                titleHeader[9] = fila.getCell(20).getStringCellValue();
+//                                titleHeader[10] = fila.getCell(21).getStringCellValue();
+//                                titleHeader[11] = fila.getCell(23).getStringCellValue();
+//                                titleHeader[12] = fila.getCell(24).getStringCellValue();
+//
+//                            } else {
+//
+//                                columna = fila.getCell(0);
+//
+////                                    if (columna != null) {
+//                                if (!ObtenerValorExcel(columna).isEmpty()) {
+//                                    boolean contador_x = true;
+//                                    int cont = 0;
+//                                    int i_x = i;
+//                                    while (contador_x) {
+//                                        cont += 1;
+//                                        i_x += 1;
+//                                        if (hoja.getRow(i_x) != null) {
+//                                            if (hoja.getRow(i_x).getCell(0) != null) {
+//                                                if (!ObtenerValorExcel(hoja.getRow(i_x).getCell(0)).isEmpty()) {
+//                                                    contador_x = false;
+//                                                }
+//                                            }
+//                                        }
+//                                        System.out.println("grupo de >> " + cont);
+//                                    }
+//                                    System.out.println("grupo de >> " + cont);
+//                                    System.out.println("1 >> " + i);
+//                                    System.out.println("nro >> " + columna.getNumericCellValue());
+//                                    flagExisteCabecera = 1;
+//                                    if (listaDetalle.size() > 0) {
+//                                        personalExalmar.setListaDetalle(listaDetalle);
+//                                        listaReporte.add(personalExalmar);
+//                                    }
+//                                    personalExalmar = new TableReporteBean();
+//                                    detalleReporteBeans = new TableDetalleReporteBeans();
+//                                    listaDetalle = new ArrayList<>();
+//
+//                                    personalExalmar.setNumero(contador += 1);
+//
+//                                    columna = fila.getCell(1);
+//                                    Date fini = columna.getDateCellValue();
+//                                    if (fini != null) {
+//                                        personalExalmar.setFecha(new SimpleDateFormat("yyyy-MM-dd").format(fini));
+//                                    } else {
+//                                        personalExalmar.setFecha("");
+//                                    }
+//
+//                                    columna = fila.getCell(2);
+//                                    if (DateUtil.isCellDateFormatted(columna)) {
+//                                        personalExalmar.setHora(new SimpleDateFormat("HH:mm").format(DateUtil.getJavaDate(columna.getNumericCellValue())));
+//                                    } else {
+//                                        personalExalmar.setHora("");
+//                                    }
+//                                    columna = fila.getCell(3);
+//                                    personalExalmar.setCelular(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(4);
+//                                    personalExalmar.setLocalidadDomicilio(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(9);
+//                                    personalExalmar.setConfinadoDonde(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(10);
+//                                    personalExalmar.setSede(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(5);
+//                                    personalExalmar.setEp(ObtenerValorExcel(columna));
+//
+//                                    //Detalle
+//                                    columna = fila.getCell(11);
+//                                    detalleReporteBeans.setConsulta(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(12);
+//                                    detalleReporteBeans.setDetalle(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(13);
+//                                    detalleReporteBeans.setAcción(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(14);
+//
+//                                    detalleReporteBeans.setDiacnostico(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(15);
+//                                    detalleReporteBeans.setMedicación(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(16);
+//                                    detalleReporteBeans.setFrecuencia(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(17);
+//                                    detalleReporteBeans.setDias(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(18);
+//                                    detalleReporteBeans.setCanntidadTotal(ObtenerValorExcel(columna));
+//                                    //fin detalle
+//
+//                                    columna = fila.getCell(19);
+//                                    personalExalmar.setTipoAtencionSeguimiento(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(20);
+//                                    personalExalmar.setTipoPrecencialVirtual(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(21);
+//                                    personalExalmar.setMedico(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(23);
+//                                    personalExalmar.setEmvSINO(ObtenerValorExcel(columna));
+//
+//                                    columna = fila.getCell(24);
+//                                    personalExalmar.setCodSap(ObtenerValorExcel(columna));
+//
+//                                    listaDetalle.add(detalleReporteBeans);
+//
+//                                } else {
+//                                    //Detalle
+//                                    if (flagExisteCabecera == 1) {
+//
+//                                        detalleReporteBeans = new TableDetalleReporteBeans();
+//                                        columna = fila.getCell(11);
+//                                        detalleReporteBeans.setConsulta(ObtenerValorExcel(columna));
+//
+//                                        columna = fila.getCell(12);
+//                                        detalleReporteBeans.setDetalle(ObtenerValorExcel(columna));
+//
+//                                        columna = fila.getCell(13);
+//                                        if (columna != null) {
+//                                            detalleReporteBeans.setAcción(ObtenerValorExcel(columna));
+//                                        } else {
+//                                            detalleReporteBeans.setAcción("");
+//                                        }
+//                                        columna = fila.getCell(14);
+//                                        detalleReporteBeans.setDiacnostico(ObtenerValorExcel(columna));
+//
+//                                        columna = fila.getCell(15);
+//                                        detalleReporteBeans.setMedicación(ObtenerValorExcel(columna));
+//
+//                                        columna = fila.getCell(16);
+//                                        detalleReporteBeans.setFrecuencia(ObtenerValorExcel(columna));
+//
+//                                        columna = fila.getCell(17);
+//                                        detalleReporteBeans.setDias(ObtenerValorExcel(columna));
+//
+//                                        columna = fila.getCell(18);
+//                                        detalleReporteBeans.setCanntidadTotal(ObtenerValorExcel(columna));
+//                                        //fin detalle
+//                                        int validaData = 0;
+//                                        if (!detalleReporteBeans.getConsulta().isEmpty()) {
+//                                            validaData = 1;
+//                                        } else if (!detalleReporteBeans.getDetalle().isEmpty()) {
+//                                            validaData = 1;
+//                                        } else if (!detalleReporteBeans.getAcción().isEmpty()) {
+//                                            validaData = 1;
+//                                        } else if (!detalleReporteBeans.getDiacnostico().isEmpty()) {
+//                                            validaData = 1;
+//                                        } else if (!detalleReporteBeans.getMedicación().isEmpty()) {
+//                                            validaData = 1;
+//                                        } else if (!detalleReporteBeans.getFrecuencia().isEmpty()) {
+//                                            validaData = 1;
+//                                        } else if (!detalleReporteBeans.getDias().isEmpty()) {
+//                                            validaData = 1;
+//                                        } else if (!detalleReporteBeans.getCanntidadTotal().isEmpty()) {
+//                                            validaData = 1;
+//                                        }
+//                                        if (validaData > 0) {
+//                                            listaDetalle.add(detalleReporteBeans);
+//                                        }
+//                                    }
+//                                }
+////                                    }
+//                            }
+//
+////                            }
+//                            progreso.setString(String.valueOf(((i + 1) * 100) / hoja.getLastRowNum()).concat("%"));
+//                            progreso.setValue(((i + 1) * 100) / hoja.getLastRowNum());
+//                            try {
+//                                Thread.sleep(5);
+//                            } catch (InterruptedException ex) {
+//                                Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
+//                            }
+//
+//                        }
                         defaultTableModel = new D_TableModelo(titleHeader, listaReporte);
                         table.setModel(defaultTableModel);
                         progreso.setString("");
@@ -424,6 +632,42 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         t.start();
     }
 
+    private String ObtenerValorExcel(XSSFCell columna) {
+        String Valor = "";
+        if (columna == null) {
+            return Valor;
+        }
+        switch (columna.getCellTypeEnum()) {
+            case BLANK:
+                Valor = "";
+                break;
+            case ERROR:
+                Valor = columna.getErrorCellString();
+                break;
+            case STRING:
+                Valor = columna.getStringCellValue();
+                break;
+            case NUMERIC:
+                Valor = String.valueOf(columna.getNumericCellValue());
+                break;
+            case _NONE:
+                Valor = "";
+                break;
+            case BOOLEAN:
+                Valor = String.valueOf(columna.getBooleanCellValue());
+            case FORMULA:
+                Valor = columna.getCellFormula();
+                break;
+
+            default:
+                Valor = "";
+                break;
+
+        }
+
+        return Valor;
+    }
+
     private void Grabar() {
         final Thread t;
         t = new Thread(() -> {
@@ -437,9 +681,15 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                             TableReporteBean beans = listaReporte.get(i);
                             System.out.println("numero >> " + beans.getNumero());
                             long idGenerado = reporteModel.GrabarReporte(beans);
+                            System.out.println("idGenerado>>"+ idGenerado);
+                            PersonalExalmarBeans exalmarBeans=personalModel.ObtinePersona(beans.getCodSap().trim());
+                            if(exalmarBeans == null){
+                             PersonalExalmarBeans exalmarBeans2=personalModel.ObtinePersonaPorDni(beans.getDni().trim());
+                             if(exalmarBeans2)
+                            }
                             for (int j = 0; j < listaReporte.get(i).getListaDetalle().size(); j++) {
                                 TableDetalleReporteBeans detalle = listaReporte.get(i).getListaDetalle().get(j);
-                                reporteModel.GrabarDetalle(detalle,(int)idGenerado);
+                                reporteModel.GrabarDetalle(detalle, (int) idGenerado);
                                 System.out.println("dias " + detalle.getDias());
                             }
 

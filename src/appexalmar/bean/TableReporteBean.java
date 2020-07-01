@@ -18,10 +18,13 @@ public class TableReporteBean {
     private String fecha;
     private String hora;
     private String celular;
-    private String LocalidadDomicilio;
-    private String confinadoDonde;
-    private String sede;
+    private String LocalidadDomicilio;   
     private String ep;
+    private String dni;
+    private String ape_nom;
+    private String cargo;
+     private String confinadoDonde;
+    private String sede;
     private String tipoAtencionSeguimiento;
     private String tipoPrecencialVirtual;
     private String medico;
@@ -225,5 +228,47 @@ public class TableReporteBean {
      */
     public void setCodSap(String codSap) {
         this.codSap = codSap;
+    }
+
+    /**
+     * @return the dni
+     */
+    public String getDni() {
+        return dni;
+    }
+
+    /**
+     * @param dni the dni to set
+     */
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    /**
+     * @return the ape_nom
+     */
+    public String getApe_nom() {
+        return ape_nom;
+    }
+
+    /**
+     * @param ape_nom the ape_nom to set
+     */
+    public void setApe_nom(String ape_nom) {
+        this.ape_nom = ape_nom;
+    }
+
+    /**
+     * @return the cargo
+     */
+    public String getCargo() {
+        return cargo;
+    }
+
+    /**
+     * @param cargo the cargo to set
+     */
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
     }
 }

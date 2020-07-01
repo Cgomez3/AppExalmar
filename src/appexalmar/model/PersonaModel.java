@@ -75,7 +75,7 @@ public class PersonaModel implements IPersona {
     @Override
     public PersonalExalmarBeans ObtinePersonaPorDni(String dni) throws SQLException {
         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        String consulta = "SELECT * FROM personal WHERE DNI= " + dni;
+        String consulta = "SELECT top 1 * FROM personal WHERE DNI= " + dni;
         resultSet = statement.executeQuery(consulta);
         PersonalExalmarBeans personal = null;
         while (resultSet.next()) {

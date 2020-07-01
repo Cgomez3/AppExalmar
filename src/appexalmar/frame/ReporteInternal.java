@@ -160,6 +160,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
     D_TextArea txtEnvioMensageCorreo;
     D_CheckBox chkEnvioMensage;
     D_TextField txtAsunto;
+    D_Button btnCargar;
 
     public ReporteInternal(Object _frame, int _width, int _height, boolean _enableDestopPane) throws HeadlessException {
         super(_frame, _width, _height, _enableDestopPane);
@@ -203,7 +204,9 @@ public class ReporteInternal extends D_InternalFrameLayout {
         d_ProgressBar = new D_ProgressBar(1, 10, Color.RED);
         d_ProgressBar.setPreferredSize(new Dimension(70, 30));
         d_ProgressBar.setForeground(Color.WHITE);
-        filters.setTypeControl(d_ProgressBar);
+        filters.setControlName(d_ProgressBar);
+        btnCargar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "Cargar");
+        filters.setTypeControl(btnCargar);
         listaFiltros.add(filters);
 
         listaFamiliaFiltros.add(listaFiltros);
@@ -216,16 +219,29 @@ public class ReporteInternal extends D_InternalFrameLayout {
         this.AddFrameToBody(panelTable);
 
         this.ShowFrame();
-
-        btnCragraExcel.addActionListener(new ActionListener() {
+        btnCargar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+               btnCargar.setEnabled(false);
+                VolverCargarTabla();
+                
+            }
+        }
+        );
+        btnCragraExcel.addActionListener(
+                new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e
+            ) {
                 DescargarExcel();
             }
-        });
-        btnNuevo.addActionListener(new ActionListener() {
+        }
+        );
+        btnNuevo.addActionListener(
+                new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e
+            ) {
                 try {
                     D_InternalFrameLayout registroLlamadas = new D_InternalFrameLayout(internalFrameLayout, 800, 500, false);
                     //registroLlamadas.DisableCloseFrameButton();
@@ -322,15 +338,19 @@ public class ReporteInternal extends D_InternalFrameLayout {
 
             }
 
-        });
+        }
+        );
 
-        txtDniFilter.addKeyListener(new KeyListener() {
+        txtDniFilter.addKeyListener(
+                new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void keyTyped(KeyEvent e
+            ) {
             }
 
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void keyPressed(KeyEvent e
+            ) {
                 EventQueue.invokeLater(() -> {
                     defaultTableModel = (DefaultTableModel) table.getModel();
                     TableRowSorter<DefaultTableModel> rowSorter = new TableRowSorter<>(defaultTableModel);
@@ -340,9 +360,69 @@ public class ReporteInternal extends D_InternalFrameLayout {
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {
+            public void keyReleased(KeyEvent e
+            ) {
+            }
+        }
+        );
+    }
+
+    private void VolverCargarTabla() {
+        final Thread t;        
+        t = new Thread(() -> {
+            defaultTableModel = (DefaultTableModel) table.getModel();
+            d_ProgressBar.setStringPainted(true);
+            while (table.getRowCount() > 0) {
+                defaultTableModel.removeRow(0);
+            }
+            List<ReporteCabeceraBeans> listaReporte;
+            try {
+                listaReporte = reporteModel.listaReporte();
+
+                for (int i = 0; i < listaReporte.size(); i++) {
+                    ReporteCabeceraBeans reporte = listaReporte.get(i);
+                    Object[] objects = new Object[22];
+
+                    objects[0] = reporte.getBtnGrabar();
+                    objects[1] = reporte.getBtnEditar();
+                    objects[2] = reporte.getBtnEnviar();
+                    objects[3] = reporte.getNumero();
+                    objects[4] = reporte.getFecha();
+                    objects[5] = reporte.getHora();
+                    objects[6] = reporte.getCelular();
+                    objects[7] = reporte.getLocalidadDomicilio();
+                    objects[8] = reporte.getEp();
+                    objects[9] = reporte.getDni();
+                    objects[10] = reporte.getApe_nom();
+                    objects[11] = reporte.getCargo();
+                    objects[12] = reporte.getConfinadoDonde();
+                    objects[13] = reporte.getSede();
+                    objects[14] = reporte.getTipo_atencion();
+                    objects[15] = reporte.getTipo_presencial();
+                    objects[16] = reporte.getMedico();
+                    objects[17] = reporte.getEmvSINO();
+                    objects[18] = reporte.getCodsap();
+                    objects[19] = reporte.getFecha_ingreso();
+                    objects[20] = reporte.getFecha_naciomiento();
+                    objects[21] = reporte.getCategoria();
+                    defaultTableModel.addRow(objects);
+                    d_ProgressBar.setString(String.valueOf(((i + 1) * 100) / listaReporte.size()).concat("%"));
+                    d_ProgressBar.setValue(((i + 1) * 100) / listaReporte.size());
+                    try {
+                        Thread.sleep(5);
+
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ImportarPersonalInternal.class
+                                .getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                d_ProgressBar.setString("");
+                btnCargar.setEnabled(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        t.start();
     }
 
     public void DescargarExcel() {
@@ -606,8 +686,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                             d_ProgressBar.setValue(((i + 1) * 100) / listaReporte.size());
                             try {
                                 Thread.sleep(5);
+
                             } catch (InterruptedException ex) {
-                                Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(ImportarPersonalInternal.class
+                                        .getName()).log(Level.SEVERE, null, ex);
                             }
                         }
 
@@ -619,14 +701,20 @@ public class ReporteInternal extends D_InternalFrameLayout {
                         btnNuevo.setEnabled(true);
                         txtDniFilter.setEnabled(true);
                         d_ProgressBar.setString("0%");
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ReporteInternal.class
+                                .getName()).log(Level.SEVERE, null, ex);
+
                     }
                 }
             } catch (IOException ex) {
-                Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ReporteInternal.class
+                        .getName()).log(Level.SEVERE, null, ex);
+
             } catch (EncryptedDocumentException ex) {
-                Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ReporteInternal.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         });
         t.start();
@@ -721,8 +809,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     D_PanelTable panelTableDetalle = new D_PanelTable(tableDetalle, Color.BLUE);
                                     registroLlamadas.AddFrameToBody(panelTableDetalle);
                                     List<Object> listaBotones = new ArrayList<>();
-                                    D_Button btnGrabar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("guardar_smal16px.png")));
-                                    D_Button btnCancelar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("iconscancel-16px.png")));
+                                    D_Button btnGrabar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class
+                                            .getResource("guardar_smal16px.png")));
+                                    D_Button btnCancelar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class
+                                            .getResource("iconscancel-16px.png")));
                                     listaBotones.add(btnGrabar);
                                     listaBotones.add(btnCancelar);
 
@@ -776,8 +866,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                                         defaultTableModel.setValueAt(objetoActualizar[i], row, i);
                                                     }
                                                     registroLlamadas.CloseInternalFrame();
+
                                                 } catch (SQLException ex) {
-                                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                                    Logger.getLogger(ReporteInternal.class
+                                                            .getName()).log(Level.SEVERE, null, ex);
                                                 }
                                             }
                                         }
@@ -785,8 +877,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     registroLlamadas.ShowFrame();
 
                                     internalFrameLayout.addShowInternalFrame(internalFrameLayout.getDesktopPanePrincipal(), registroLlamadas);
+
                                 } catch (Exception ex) {
-                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                    Logger.getLogger(ReporteInternal.class
+                                            .getName()).log(Level.SEVERE, null, ex);
                                 }
                             }
                             if (button.getName().equals("G")) {
@@ -849,8 +943,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     D_PanelTable panelTableDetalle = new D_PanelTable(tableDetalle, Color.BLUE);
                                     registroLlamadas.AddFrameToBody(panelTableDetalle);
                                     List<Object> listaBotones = new ArrayList<>();
-                                    D_Button btnGrabar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("guardar_smal16px.png")));
-                                    D_Button btnCancelar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("iconscancel-16px.png")));
+                                    D_Button btnGrabar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class
+                                            .getResource("guardar_smal16px.png")));
+                                    D_Button btnCancelar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class
+                                            .getResource("iconscancel-16px.png")));
                                     listaBotones.add(btnGrabar);
                                     listaBotones.add(btnCancelar);
 
@@ -899,8 +995,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                                     defaultTableModel = (DefaultTableModel) table.getModel();
                                                     defaultTableModel.addRow(reporteModel.listaReporte((int) idCabecera));
                                                     registroLlamadas.CloseInternalFrame();
+
                                                 } catch (SQLException ex) {
-                                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                                    Logger.getLogger(ReporteInternal.class
+                                                            .getName()).log(Level.SEVERE, null, ex);
                                                 }
                                             }
                                         }
@@ -908,8 +1006,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     registroLlamadas.ShowFrame();
 
                                     internalFrameLayout.addShowInternalFrame(internalFrameLayout.getDesktopPanePrincipal(), registroLlamadas);
+
                                 } catch (Exception ex) {
-                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                    Logger.getLogger(ReporteInternal.class
+                                            .getName()).log(Level.SEVERE, null, ex);
                                 }
                             }
                             if (button.getName().equals("I")) {
@@ -930,8 +1030,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     CorreoBeans correo = correoModel.ObtieneCorreo(Singletoon.getInstance().usuario.getId_usuario());
                                     if (correo != null) {
                                         txtAsunto.setText(correo.getAsunto());
+
                                     }
-                                    D_Button btnEnviarCorreo = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("sendmessag.png")), "Enviar Correo");
+                                    D_Button btnEnviarCorreo = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class
+                                            .getResource("sendmessag.png")), "Enviar Correo");
                                     btnEnviarCorreo.setPreferredSize(new Dimension(150, 30));
                                     d_PanelGroup.AddComponet(0, 0, 1, 1, 0, new D_Label("Asunto:", Color.white, true));
                                     d_PanelGroup.AddComponet(1, 0, 1, 1, 0, txtAsunto);
@@ -952,8 +1054,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                         }
                                     });
                                     internalFrameLayout.addShowInternalFrame(internalFrameLayout.getDesktopPanePrincipal(), envioCorreoInternal);
+
                                 } catch (Exception ex) {
-                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                    Logger.getLogger(ReporteInternal.class
+                                            .getName()).log(Level.SEVERE, null, ex);
                                 }
 
                                 //
@@ -999,8 +1103,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
             CorreoBeans correos = null;
             try {
                 correos = correoModel.ObtieneCorreo(Singletoon.getInstance().usuario.getId_usuario());
+
             } catch (SQLException ex) {
-                Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ReporteInternal.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
             if (correos == null) {
                 JOptionPane.showConfirmDialog(null, "Ocurrio un Problema al enviar el Correo Asegure que este conectado a la Base de Datos", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1163,8 +1269,10 @@ public class ReporteInternal extends D_InternalFrameLayout {
                     }
                 } catch (MessagingException me) {
                     JOptionPane.showMessageDialog(null, "Error: " + me.getMessage());
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ReporteInternal.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             });
 

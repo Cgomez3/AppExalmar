@@ -56,7 +56,12 @@ public class ReporteModel implements IReporte {
             reporteBeans.setBtnEnviar(btnEnviar);
             reporteBeans.setNumero(resultSet.getInt("numero"));
             java.util.Date fecha = resultSet.getDate("fecha");
-            reporteBeans.setFecha(new SimpleDateFormat("dd-MM-yyyy").format(fecha));
+            if(fecha !=null){
+             reporteBeans.setFecha(new SimpleDateFormat("dd-MM-yyyy").format(fecha));
+            }else{
+            reporteBeans.setFecha("");
+            }
+            
             reporteBeans.setHora(resultSet.getString("hora"));
             reporteBeans.setCelular(resultSet.getString("celular"));
             reporteBeans.setLocalidadDomicilio(resultSet.getString("localidad_domicilio"));
@@ -281,7 +286,11 @@ public class ReporteModel implements IReporte {
         QUERY = "INSERT INTO REPORTE_CABECERA (NUMERO, FECHA, HORA, CELULAR,LOCALIDAD_DOMICILIO,CONFINADO_DONDE,SEDE,EP,TIPO_ATENCION_SEGUIMIENTO,TIPO_PRESENCIAL_VIRTUAL,ALERTA,COD_SAP,MEDICO) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         prepareStatement = conexion.getConection().prepareStatement(QUERY, PreparedStatement.RETURN_GENERATED_KEYS);
         prepareStatement.setInt(1, reporteBean.getNumero());
+        if(reporteBean.getFecha().isEmpty()){
+        prepareStatement.setString(2, null);
+        }else{
         prepareStatement.setString(2, reporteBean.getFecha());
+        }
         prepareStatement.setString(3, reporteBean.getHora());
         prepareStatement.setString(4, reporteBean.getCelular());
         prepareStatement.setString(5, reporteBean.getLocalidadDomicilio());

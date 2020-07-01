@@ -1,17 +1,3 @@
-CREATE TABLE `personal` (
-  `id_personal` smallint NOT NULL AUTO_INCREMENT,
-  `codsap` smallint DEFAULT NULL,
-  `apellido_nombres` varchar(500) DEFAULT NULL,
-  `dni` varchar(8) DEFAULT NULL,
-  `cargo` varchar(200) DEFAULT NULL,
-  `sede` varchar(200) DEFAULT NULL,
-  `fecha_ingreso` date DEFAULT NULL,
-  `fecha_nacimiento` date DEFAULT NULL,
-  `categoria` varchar(200) DEFAULT NULL,
-  `tipo_personal` char(1) DEFAULT NULL,
-  PRIMARY KEY (`id_personal`)
-) ENGINE=InnoDB AUTO_INCREMENT=1221 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE `reporte_cabecera` (
   `id_cabecera` int NOT NULL AUTO_INCREMENT,
   `numero` int DEFAULT NULL,
@@ -29,6 +15,8 @@ CREATE TABLE `reporte_cabecera` (
   `medico` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id_cabecera`)
 ) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 CREATE TABLE `reporte_detalle` (
   `id_detalle` smallint NOT NULL AUTO_INCREMENT,
   `id_cabecera` smallint DEFAULT NULL,
@@ -44,8 +32,30 @@ CREATE TABLE `reporte_detalle` (
   KEY `id_cabecera_idx` (`id_cabecera`)
 ) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `personal` (
+  `id_personal` smallint NOT NULL AUTO_INCREMENT,
+  `codsap` smallint DEFAULT NULL,
+  `apellido_nombres` varchar(500) DEFAULT NULL,
+  `dni` varchar(8) DEFAULT NULL,
+  `cargo` varchar(200) DEFAULT NULL,
+  `sede` varchar(200) DEFAULT NULL,
+  `fecha_ingreso` date DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `categoria` varchar(200) DEFAULT NULL,
+  `tipo_personal` char(1) DEFAULT NULL,
+  PRIMARY KEY (`id_personal`)
+) ENGINE=InnoDB AUTO_INCREMENT=1221 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `usuarios` (
+  `idusuarios` int NOT NULL AUTO_INCREMENT,
+  `nombres` varchar(200) DEFAULT NULL,
+  `usuario` varchar(90) DEFAULT NULL,
+  `clave` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`idusuarios`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `correo` (
-  `idcorreo` int NOT NULL,
+  `idcorreo` int NOT NULL AUTO_INCREMENT COMMENT 'ASDASD',
   `correo_envio` varchar(200) DEFAULT NULL,
   `correo_recepcion` varchar(200) DEFAULT NULL,
   `contrasenia_envio` varchar(45) DEFAULT NULL,
@@ -53,15 +63,6 @@ CREATE TABLE `correo` (
   `mensaje_programado` varchar(500) DEFAULT NULL,
   `id_usuario` int DEFAULT NULL,
   PRIMARY KEY (`idcorreo`),
-  KEY `idusuarios_idx` (`id_usuario`),
-  CONSTRAINT `idusuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`idusuarios`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `usuarios` (
-  `idusuarios` int NOT NULL,
-  `nombres` varchar(200) DEFAULT NULL,
-  `usuario` varchar(90) DEFAULT NULL,
-  `clave` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`idusuarios`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+  KEY `_idx` (`id_usuario`),
+  CONSTRAINT `id_usuario_fk` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`idusuarios`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
