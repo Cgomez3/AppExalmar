@@ -1,3 +1,4 @@
+
 CREATE TABLE `reporte_cabecera` (
   `id_cabecera` int NOT NULL AUTO_INCREMENT,
   `numero` int DEFAULT NULL,
@@ -13,8 +14,11 @@ CREATE TABLE `reporte_cabecera` (
   `alerta` varchar(50) DEFAULT NULL,
   `cod_sap` varchar(20) DEFAULT NULL,
   `medico` varchar(200) DEFAULT NULL,
+  `dni` varchar(50) DEFAULT NULL,
+  `reporte_cabeceracol` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id_cabecera`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 CREATE TABLE `reporte_detalle` (
@@ -30,13 +34,14 @@ CREATE TABLE `reporte_detalle` (
   `cantidad_total` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id_detalle`),
   KEY `id_cabecera_idx` (`id_cabecera`)
-) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 CREATE TABLE `personal` (
   `id_personal` smallint NOT NULL AUTO_INCREMENT,
-  `codsap` smallint DEFAULT NULL,
+  `codsap` varchar(20) DEFAULT NULL,
   `apellido_nombres` varchar(500) DEFAULT NULL,
-  `dni` varchar(8) DEFAULT NULL,
+  `dni` varchar(50) DEFAULT NULL,
   `cargo` varchar(200) DEFAULT NULL,
   `sede` varchar(200) DEFAULT NULL,
   `fecha_ingreso` date DEFAULT NULL,
@@ -44,7 +49,7 @@ CREATE TABLE `personal` (
   `categoria` varchar(200) DEFAULT NULL,
   `tipo_personal` char(1) DEFAULT NULL,
   PRIMARY KEY (`id_personal`)
-) ENGINE=InnoDB AUTO_INCREMENT=1221 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `usuarios` (
   `idusuarios` int NOT NULL AUTO_INCREMENT,

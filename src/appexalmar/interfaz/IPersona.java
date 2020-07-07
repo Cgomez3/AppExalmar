@@ -18,4 +18,8 @@ public interface IPersona {
     PersonalExalmarBeans ObtinePersona (String codsap)throws SQLException;
     List<PersonalExalmarBeans> listaPersonal() throws SQLException;
     PersonalExalmarBeans ObtinePersonaPorDni(String dni) throws SQLException;
+    PersonalExalmarBeans ObtinePersonaPorNombre(String nombre) throws SQLException;
+    void ActualizaPersonaPorDni(PersonalExalmarBeans personal) throws SQLException ;
+    void ActualizaPersonaCodsap(PersonalExalmarBeans personal) throws SQLException;
+    void ActualizaPersonaNombre(PersonalExalmarBeans personal) throws SQLException;
 }

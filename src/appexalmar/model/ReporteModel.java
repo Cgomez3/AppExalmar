@@ -56,25 +56,41 @@ public class ReporteModel implements IReporte {
             reporteBeans.setBtnEnviar(btnEnviar);
             reporteBeans.setNumero(resultSet.getInt("numero"));
             java.util.Date fecha = resultSet.getDate("fecha");
-            if(fecha !=null){
-             reporteBeans.setFecha(new SimpleDateFormat("dd-MM-yyyy").format(fecha));
-            }else{
-            reporteBeans.setFecha("");
+            if (fecha != null) {
+                reporteBeans.setFecha(new SimpleDateFormat("dd-MM-yyyy").format(fecha));
+            } else {
+                reporteBeans.setFecha("");
             }
-            
+
             reporteBeans.setHora(resultSet.getString("hora"));
             reporteBeans.setCelular(resultSet.getString("celular"));
             reporteBeans.setLocalidadDomicilio(resultSet.getString("localidad_domicilio"));
             reporteBeans.setEp(resultSet.getString("ep"));
+            reporteBeans.setDni(resultSet.getString("dni"));
             String codsap = resultSet.getString("cod_sap");
             if (codsap.isEmpty()) {
                 codsap = "0";
             }
             PersonalExalmarBeans personal = personaModel.ObtinePersona(codsap);
             if (personal != null) {
-                reporteBeans.setDni(personal.getDni());
                 reporteBeans.setApe_nom(personal.getApellidosNombres());
+                reporteBeans.setDni(personal.getDni());
                 reporteBeans.setCargo(personal.getCargo());
+                reporteBeans.setCodsap(personal.getCodsap());
+                reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
+                reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
+                reporteBeans.setCategoria(personal.getCatgoria());
+            } else {
+                personal = personaModel.ObtinePersonaPorDni(reporteBeans.getDni());
+                if (personal != null) {
+                    reporteBeans.setApe_nom(personal.getApellidosNombres());
+                    reporteBeans.setDni(personal.getDni());
+                    reporteBeans.setCargo(personal.getCargo());
+                    reporteBeans.setCodsap(personal.getCodsap());
+                    reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
+                    reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
+                    reporteBeans.setCategoria(personal.getCatgoria());
+                }
             }
             reporteBeans.setConfinadoDonde(resultSet.getString("confinado_donde"));
             reporteBeans.setSede(resultSet.getString("sede"));
@@ -82,23 +98,18 @@ public class ReporteModel implements IReporte {
             reporteBeans.setTipo_presencial(resultSet.getString("tipo_presencial_virtual"));
             reporteBeans.setMedico(resultSet.getString("medico"));
             reporteBeans.setEmvSINO(resultSet.getString("alerta"));
-            if (personal != null) {
-                reporteBeans.setCodsap(personal.getCodsap());
-                reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
-                reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
-                reporteBeans.setCategoria(personal.getCatgoria());
-            }
+
             listaReportes.add(reporteBeans);
         }
         conexion.CloseSql();
         return listaReportes;
     }
-    
+
     @Override
     public ReporteCabeceraBeans ObtieneReporte(int idcabecera) throws SQLException {
         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         resultSet = statement.executeQuery("SELECT * FROM reporte_cabecera WHERE id_cabecera=" + idcabecera);
-        ReporteCabeceraBeans reporteBeans=null;
+        ReporteCabeceraBeans reporteBeans = null;
         while (resultSet.next()) {
             reporteBeans = new ReporteCabeceraBeans();
             D_Button btnEditar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "E", "");
@@ -117,6 +128,7 @@ public class ReporteModel implements IReporte {
             reporteBeans.setCelular(resultSet.getString("celular"));
             reporteBeans.setLocalidadDomicilio(resultSet.getString("localidad_domicilio"));
             reporteBeans.setEp(resultSet.getString("ep"));
+            reporteBeans.setDni(resultSet.getString("dni"));
             String codsap = resultSet.getString("cod_sap");
             if (codsap.isEmpty()) {
                 codsap = "0";
@@ -126,6 +138,20 @@ public class ReporteModel implements IReporte {
                 reporteBeans.setDni(personal.getDni());
                 reporteBeans.setApe_nom(personal.getApellidosNombres());
                 reporteBeans.setCargo(personal.getCargo());
+                reporteBeans.setCodsap(personal.getCodsap());
+                reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
+                reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
+                reporteBeans.setCategoria(personal.getCatgoria());
+
+            } else {
+                personal = personaModel.ObtinePersonaPorDni(reporteBeans.getDni());
+                reporteBeans.setDni(personal.getDni());
+                reporteBeans.setApe_nom(personal.getApellidosNombres());
+                reporteBeans.setCargo(personal.getCargo());
+                reporteBeans.setCodsap(personal.getCodsap());
+                reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
+                reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
+                reporteBeans.setCategoria(personal.getCatgoria());
             }
             reporteBeans.setConfinadoDonde(resultSet.getString("confinado_donde"));
             reporteBeans.setSede(resultSet.getString("sede"));
@@ -133,12 +159,7 @@ public class ReporteModel implements IReporte {
             reporteBeans.setTipo_presencial(resultSet.getString("tipo_presencial_virtual"));
             reporteBeans.setMedico(resultSet.getString("medico"));
             reporteBeans.setEmvSINO(resultSet.getString("alerta"));
-            if (personal != null) {
-                reporteBeans.setCodsap(personal.getCodsap());
-                reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
-                reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
-                reporteBeans.setCategoria(personal.getCatgoria());
-            }
+
         }
         conexion.CloseSql();
         return reporteBeans;
@@ -148,13 +169,13 @@ public class ReporteModel implements IReporte {
     public Object[] listaReporte(int idCabecera) throws SQLException {
         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         resultSet = statement.executeQuery("SELECT * FROM reporte_cabecera where  id_cabecera=" + idCabecera);
-        Object[] objects = new Object[21];
+        Object[] objects = new Object[22];
         while (resultSet.next()) {
             D_Button btnEditar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "E", "");
             btnEditar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
             D_Button btnAgregar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("addsi.png")), "G", "");
             btnAgregar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
-            D_Button btnEnviar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("addsi.png")), "I", "");
+            D_Button btnEnviar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("email.png")), "I", "");
             btnEnviar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
             objects[0] = btnAgregar;
             objects[1] = btnEditar;
@@ -168,17 +189,36 @@ public class ReporteModel implements IReporte {
             objects[8] = resultSet.getString("ep");
             String codsap = resultSet.getString("cod_sap");
             if (codsap.isEmpty()) {
-                codsap = "0";
+                codsap = "";
             }
             PersonalExalmarBeans personal = personaModel.ObtinePersona(codsap);
             if (personal != null) {
                 objects[9] = personal.getDni();
                 objects[10] = personal.getApellidosNombres();
                 objects[11] = personal.getCargo();
+                objects[18] = personal.getCodsap();
+                objects[19] = personal.getFechaIngreso();
+                objects[20] = personal.getFechaNacimiento();
+                objects[21] = personal.getCatgoria();
             } else {
-                objects[9] = "";
-                objects[10] = "";
-                objects[11] = "";
+                personal = personaModel.ObtinePersonaPorDni(resultSet.getString("dni"));
+                if (personal != null) {
+                    objects[9] = personal.getDni();
+                    objects[10] = personal.getApellidosNombres();
+                    objects[11] = personal.getCargo();
+                    objects[18] = personal.getCodsap();
+                    objects[19] = personal.getFechaIngreso();
+                    objects[20] = personal.getFechaNacimiento();
+                    objects[21] = personal.getCatgoria();
+                } else {
+                    objects[9] = "";
+                    objects[10] = "";
+                    objects[11] = "";
+                    objects[18] = "";
+                    objects[19] = "";
+                    objects[20] = "";
+                    objects[21] = "";
+                }
             }
             objects[12] = resultSet.getString("confinado_donde");
             objects[13] = resultSet.getString("sede");
@@ -186,17 +226,7 @@ public class ReporteModel implements IReporte {
             objects[15] = resultSet.getString("tipo_presencial_virtual");
             objects[16] = resultSet.getString("medico");
             objects[17] = resultSet.getString("alerta");
-            if (personal != null) {
-                objects[18] = personal.getCodsap();
-                objects[19] = personal.getFechaIngreso();
-                objects[20] = personal.getFechaNacimiento();
-                objects[21] = personal.getCatgoria();
-            } else {
-                objects[18] = "";
-                objects[19] = "";
-                objects[20] = "";
-                objects[21] = "";
-            }
+
         }
         conexion.CloseSql();
         return objects;
@@ -251,6 +281,7 @@ public class ReporteModel implements IReporte {
 
         return listaDetalleReporte;
     }
+
     @Override
     public List<TableDetalleReporteBeans> listaTableDetalleReporte(int id_cabecera) throws SQLException {
         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -264,7 +295,7 @@ public class ReporteModel implements IReporte {
             btnEditar.setHiddenValue(String.valueOf(resultSet.getInt("id_detalle")));
             D_Button btnEliminar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("borrar.png")), "E", "");
             btnEliminar.setHiddenValue(String.valueOf(resultSet.getInt("id_detalle")));
-            
+
             detalle.setBtnModificar(btnEditar);
             detalle.setBtnEliminar(btnEliminar);
             detalle.setConsulta(resultSet.getString("consulta"));
@@ -283,13 +314,13 @@ public class ReporteModel implements IReporte {
 
     @Override
     public long GrabarReporte(TableReporteBean reporteBean) throws SQLException {
-        QUERY = "INSERT INTO REPORTE_CABECERA (NUMERO, FECHA, HORA, CELULAR,LOCALIDAD_DOMICILIO,CONFINADO_DONDE,SEDE,EP,TIPO_ATENCION_SEGUIMIENTO,TIPO_PRESENCIAL_VIRTUAL,ALERTA,COD_SAP,MEDICO) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        QUERY = "INSERT INTO REPORTE_CABECERA (NUMERO, FECHA, HORA, CELULAR,LOCALIDAD_DOMICILIO,CONFINADO_DONDE,SEDE,EP,TIPO_ATENCION_SEGUIMIENTO,TIPO_PRESENCIAL_VIRTUAL,ALERTA,COD_SAP,MEDICO,DNI) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         prepareStatement = conexion.getConection().prepareStatement(QUERY, PreparedStatement.RETURN_GENERATED_KEYS);
         prepareStatement.setInt(1, reporteBean.getNumero());
-        if(reporteBean.getFecha().isEmpty()){
-        prepareStatement.setString(2, null);
-        }else{
-        prepareStatement.setString(2, reporteBean.getFecha());
+        if (reporteBean.getFecha().isEmpty()) {
+            prepareStatement.setString(2, null);
+        } else {
+            prepareStatement.setString(2, reporteBean.getFecha());
         }
         prepareStatement.setString(3, reporteBean.getHora());
         prepareStatement.setString(4, reporteBean.getCelular());
@@ -302,6 +333,8 @@ public class ReporteModel implements IReporte {
         prepareStatement.setString(11, reporteBean.getEmvSINO());
         prepareStatement.setString(12, reporteBean.getCodSap());
         prepareStatement.setString(13, reporteBean.getMedico());
+        System.out.println("reporteBean.getDni()"+reporteBean.getDni());
+        prepareStatement.setString(14, reporteBean.getDni());
         int pt = prepareStatement.executeUpdate();
         if (pt == 0) {
             throw new SQLException("No se puedo Grabar.");
@@ -316,7 +349,7 @@ public class ReporteModel implements IReporte {
     }
 
     @Override
-    public void GrabarDetalle(TableDetalleReporteBeans detalleBean,int id_cabecera) throws SQLException {
+    public void GrabarDetalle(TableDetalleReporteBeans detalleBean, int id_cabecera) throws SQLException {
         QUERY = "INSERT INTO REPORTE_DETALLE (ID_CABECERA, CONSULTA, DETALLE, ACCION,DIACNOSTICO,MEDICACION,FRECUENCIA,DIAS,CANTIDAD_TOTAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         prepareStatement = conexion.getConection().prepareStatement(QUERY, PreparedStatement.RETURN_GENERATED_KEYS);
         prepareStatement.setInt(1, id_cabecera);
@@ -347,7 +380,7 @@ public class ReporteModel implements IReporte {
 
     @Override
     public void ActualizarReporte(TableReporteBean reporteBean, int id_cabecera) throws SQLException {
-        QUERY = "UPDATE  REPORTE_CABECERA SET NUMERO=?, FECHA=?, HORA=?, CELULAR=?,LOCALIDAD_DOMICILIO=?,CONFINADO_DONDE=?,SEDE=?,EP=?,TIPO_ATENCION_SEGUIMIENTO=?,TIPO_PRESENCIAL_VIRTUAL=?,ALERTA=?,COD_SAP=?,MEDICO=? WHERE ID_CABECERA=?";
+        QUERY = "UPDATE  REPORTE_CABECERA SET NUMERO=?, FECHA=?, HORA=?, CELULAR=?,LOCALIDAD_DOMICILIO=?,CONFINADO_DONDE=?,SEDE=?,EP=?,TIPO_ATENCION_SEGUIMIENTO=?,TIPO_PRESENCIAL_VIRTUAL=?,ALERTA=?,COD_SAP=?,MEDICO=?,DNI=? WHERE ID_CABECERA=?";
         prepareStatement = conexion.getConection().prepareStatement(QUERY, PreparedStatement.RETURN_GENERATED_KEYS);
         prepareStatement.setInt(1, reporteBean.getNumero());
         prepareStatement.setString(2, reporteBean.getFecha());
@@ -362,7 +395,8 @@ public class ReporteModel implements IReporte {
         prepareStatement.setString(11, reporteBean.getEmvSINO());
         prepareStatement.setString(12, reporteBean.getCodSap());
         prepareStatement.setString(13, reporteBean.getMedico());
-        prepareStatement.setInt(14, id_cabecera);
+        prepareStatement.setString(14, reporteBean.getDni());
+        prepareStatement.setInt(15, id_cabecera);
         prepareStatement.executeUpdate();
         conexion.CloseSql();
     }

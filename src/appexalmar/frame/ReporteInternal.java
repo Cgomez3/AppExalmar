@@ -161,6 +161,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
     D_CheckBox chkEnvioMensage;
     D_TextField txtAsunto;
     D_Button btnCargar;
+    int grabarPersona = 0;
 
     public ReporteInternal(Object _frame, int _width, int _height, boolean _enableDestopPane) throws HeadlessException {
         super(_frame, _width, _height, _enableDestopPane);
@@ -196,19 +197,31 @@ public class ReporteInternal extends D_InternalFrameLayout {
         listaFiltros.add(filters);
 
         listaFamiliaFiltros.add(listaFiltros);
+        
         listaFiltros = new ArrayList<>();
         filters = new D_ControlsObject();
-        btnCragraExcel = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("excel.png")), "Descargar");
-
-        filters.setControlName(btnCragraExcel);
+        btnCragraExcel = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("excel.png")), "Descargar");        
+        filters.setTypeControl(btnCragraExcel);
+        listaFiltros.add(filters);
+        listaFamiliaFiltros.add(listaFiltros);
+        
+        filters = new D_ControlsObject();
+        listaFiltros = new ArrayList<>();
         d_ProgressBar = new D_ProgressBar(1, 10, Color.RED);
         d_ProgressBar.setPreferredSize(new Dimension(70, 30));
         d_ProgressBar.setForeground(Color.WHITE);
-        filters.setControlName(d_ProgressBar);
+        btnCargar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "Cargar");
+        filters.setTypeControl(d_ProgressBar);
+        listaFiltros.add(filters);
+        
+        listaFamiliaFiltros.add(listaFiltros);
+        
+        filters = new D_ControlsObject();
+        listaFiltros = new ArrayList<>();
         btnCargar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "Cargar");
         filters.setTypeControl(btnCargar);
         listaFiltros.add(filters);
-
+        
         listaFamiliaFiltros.add(listaFiltros);
 
         this.AddFiltersToFrameHeader(listaFamiliaFiltros, new Color(52, 202, 188), "");
@@ -222,9 +235,9 @@ public class ReporteInternal extends D_InternalFrameLayout {
         btnCargar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               btnCargar.setEnabled(false);
+                btnCargar.setEnabled(false);
                 VolverCargarTabla();
-                
+
             }
         }
         );
@@ -368,7 +381,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
     }
 
     private void VolverCargarTabla() {
-        final Thread t;        
+        final Thread t;
         t = new Thread(() -> {
             defaultTableModel = (DefaultTableModel) table.getModel();
             d_ProgressBar.setStringPainted(true);
@@ -732,7 +745,6 @@ public class ReporteInternal extends D_InternalFrameLayout {
             table = new D_Table(titleHeader, reporteModel.listaReporte());
             table.AddBackGroundColorTable(new Color(52, 202, 188));
             table.AddBackGroundColorTableHeader(new Color(52, 202, 188));
-            table.EnableRowSorter(true);
             table.AddColumWidth(ModificarAnchoColumna());
             table.AddColumnOrientation(CentrarColumnasDeTabla());
             table.addMouseListener(new MouseListener() {
@@ -748,17 +760,22 @@ public class ReporteInternal extends D_InternalFrameLayout {
                             D_Button button = (D_Button) value;
                             if (button.getName().equals("E")) {
                                 try {
+                                    System.out.println("row 1>>" + row);
                                     D_InternalFrameLayout registroLlamadas = new D_InternalFrameLayout(internalFrameLayout, 800, 500, false);
                                     //registroLlamadas.DisableCloseFrameButton();
                                     registroLlamadas.BackgroundColor(new Color(52, 202, 188));
                                     registroLlamadas.EnableMenu(false, null, new D_Label("Actualizar Registro de LLamadas", Color.white, true));
                                     Object codSap = table.getValueAt(row, 18);
+                                    Object dni = table.getValueAt(row, 9);
                                     Object DNI;
                                     Object apeNom;
                                     if (((String) codSap).isEmpty()) {
-                                        codSap = "0";
+                                        codSap = "-1";
                                     }
                                     PersonalExalmarBeans personal = personaModel.ObtinePersona((String) codSap);
+                                    if (personal == null) {
+                                        personal = personaModel.ObtinePersonaPorDni((String) dni);
+                                    }
                                     if (personal != null) {
                                         DNI = personal.getDni();
                                         apeNom = personal.getApellidosNombres();
@@ -806,6 +823,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     tableDetalle.AddBackGroundColorTable(new Color(52, 202, 188));
                                     tableDetalle.AddBackGroundColorTableHeader(new Color(52, 202, 188));
                                     tableDetalle.AddColumnOrientation(AlingColunaDetalle());
+                                    
                                     D_PanelTable panelTableDetalle = new D_PanelTable(tableDetalle, Color.BLUE);
                                     registroLlamadas.AddFrameToBody(panelTableDetalle);
                                     List<Object> listaBotones = new ArrayList<>();
@@ -850,7 +868,8 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                                     }
                                                     reporteBean.setEmvSINO(alerta);
                                                     reporteBean.setCodSap(txtCodSabDetalle.getText());
-                                                    reporteBean.setMedico("DRA MILAGROS VALENTIN");
+                                                    reporteBean.setMedico(Singletoon.getInstance().usuario.getNombre());
+                                                    reporteBean.setDni(txtDniDetalle.getText());
                                                     reporteModel.ActualizarReporte(reporteBean, id_cabecera_editar);
                                                     reporteModel.EliminaDetalleReporte(id_cabecera_editar);
                                                     if (listaTableDetalle.size() > 0) {
@@ -862,9 +881,14 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                                     JOptionPane.showMessageDialog(null, "Se Actualizo el Registro Correctamente.");
                                                     defaultTableModel = (DefaultTableModel) table.getModel();
                                                     Object[] objetoActualizar = reporteModel.listaReporte(id_cabecera_editar);
+                                                    System.out.println("row 2>>" + row);
+                                                    System.out.println("row 2>>" + table.getSelectedRow());
+                                                    table.setAutoCreateRowSorter(false);
                                                     for (int i = 0; i < objetoActualizar.length; i++) {
+                                                        System.out.println(">> i >> " + objetoActualizar[i]);
                                                         defaultTableModel.setValueAt(objetoActualizar[i], row, i);
                                                     }
+                                                    defaultTableModel.fireTableDataChanged();
                                                     registroLlamadas.CloseInternalFrame();
 
                                                 } catch (SQLException ex) {
@@ -890,12 +914,16 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     registroLlamadas.BackgroundColor(new Color(52, 202, 188));
                                     registroLlamadas.EnableMenu(false, null, new D_Label("Registrar LLamada", Color.white, true));
                                     Object codSap = table.getValueAt(row, 18);
+                                    Object dni = table.getValueAt(row, 9);
                                     Object DNI;
                                     Object apeNom;
                                     if (((String) codSap).isEmpty()) {
-                                        codSap = "0";
+                                        codSap = "-1";
                                     }
                                     PersonalExalmarBeans personal = personaModel.ObtinePersona((String) codSap);
+                                    if (personal == null) {
+                                        personal = personaModel.ObtinePersonaPorDni((String) dni);
+                                    }
                                     if (personal != null) {
                                         DNI = personal.getDni();
                                         apeNom = personal.getApellidosNombres();
@@ -982,7 +1010,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                                     }
                                                     reporteBean.setEmvSINO(alerta);
                                                     reporteBean.setCodSap(txtCodSabDetalle.getText());
-                                                    reporteBean.setMedico("DRA MILAGROS VALENTIN");
+                                                    reporteBean.setMedico(Singletoon.getInstance().usuario.getNombre());
                                                     long idCabecera = reporteModel.GrabarReporte(reporteBean);
                                                     if (listaTableDetalle.size() > 0) {
                                                         for (int i = 0; i < listaTableDetalle.size(); i++) {
@@ -1690,7 +1718,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                     List<List<D_ControlsObject>> listaGrupoControlPersonal = new ArrayList<>();
                     List<D_ControlsObject> listaControlPersonal = new ArrayList<>();
                     D_ControlsObject controlsObject = new D_ControlsObject();
-
+                    grabarPersona = 0;
                     D_TextField txtDni = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
                     D_TextField txtApeNom = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
                     D_TextField txtCargo = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
@@ -1701,7 +1729,32 @@ public class ReporteInternal extends D_InternalFrameLayout {
                     D_TextField txtCategoria = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
                     D_CheckBox tipoPersonal = new D_CheckBox(1, 10, Color.GREEN);
                     tipoPersonal.setText("Tripulate");
-
+                    String codsap = "-1";
+                    if (!txtCodSabDetalle.getText().isEmpty()) {
+                        codsap = txtCodSabDetalle.getText();
+                    }
+                    PersonalExalmarBeans personal = personaModel.ObtinePersona(codsap);
+                    if (personal == null) {
+                        personal = personaModel.ObtinePersonaPorDni(txtDniDetalle.getText());
+                    }
+                    if (personal != null) {
+                        txtDni.setText(personal.getDni());
+                        txtApeNom.setText(personal.getApellidosNombres());
+                        txtCodsap.setText(personal.getCodsap());
+                        txtCargo.setText(personal.getCargo());
+                        txtSede.setText(personal.getSede());
+                        txtFechaIngreso.setText(personal.getFechaIngreso());
+                        txtFechaNacimiento.setText(personal.getFechaNacimiento());
+                        txtCategoria.setText(personal.getCatgoria());
+                        if (personal.getTipoPersonal().equals("T")) {
+                            tipoPersonal.setSelected(true);
+                        }
+                        grabarPersona = 1;
+                    } else {
+                        txtDni.setText(txtDniDetalle.getText());
+                        txtApeNom.setText(txtApelliNombresDetalle.getText());
+                        txtCodsap.setText(txtCodSabDetalle.getText());
+                    }
                     controlsObject.setTypeControl(txtDni);
                     controlsObject.setControlName(new D_Label("DNI", Color.WHITE, true));
                     listaControlPersonal.add(controlsObject);
@@ -1779,8 +1832,21 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     beans.setTipoPersonal("E");
                                 }
                                 try {
-                                    personaModel.GrabarPersona(beans);
-                                    JOptionPane.showMessageDialog(null, "Se Registro Correctamente el Personal.");
+                                    if (grabarPersona == 0) {
+                                        personaModel.GrabarPersona(beans);
+                                        JOptionPane.showMessageDialog(null, "Se Registro Correctamente el Personal.");
+                                    }
+                                    if (grabarPersona == 1) {
+                                        if (!txtCodsap.getText().isEmpty()) {
+                                            personaModel.ActualizaPersonaCodsap(beans);
+                                        } else {
+                                            if (!txtDni.getText().isEmpty()) {
+                                                personaModel.ActualizaPersonaPorDni(beans);
+                                            }
+                                        }
+
+                                        JOptionPane.showMessageDialog(null, "Se Actualizo Correctamente el Personal.");
+                                    }
                                     txtDni.setText("");
                                     txtApeNom.setText("");
                                     txtCargo.setText("");
@@ -1796,6 +1862,12 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                 }
 
                             }
+                        }
+                    });
+                    btnCancelarPersonal.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            personalLayout.CloseInternalFrame();
                         }
                     });
                     personalLayout.ShowFrame();

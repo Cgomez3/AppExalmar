@@ -370,7 +370,7 @@ public class ImportarPersonalInternal extends D_InternalFrameLayout {
                             try {
                                 Thread.sleep(5);
                             } catch (InterruptedException ex) {
-                                Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
+                                JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                             }
 
                         }
@@ -384,12 +384,15 @@ public class ImportarPersonalInternal extends D_InternalFrameLayout {
                         chkTripulante.setEnabled(true);
                     }
                 } catch (FileNotFoundException ex) {
+                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                     Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                     TerminarCaga();
                 } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                     Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                     TerminarCaga();
                 } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                     Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                     TerminarCaga();
                 }
@@ -462,6 +465,7 @@ public class ImportarPersonalInternal extends D_InternalFrameLayout {
                         TerminarCaga();
 
                     } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                         Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -480,6 +484,7 @@ public class ImportarPersonalInternal extends D_InternalFrameLayout {
             listaReporte = new ArrayList<>();
             defaultTableModel = new D_TableModelo(titleHeader);
         } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
             Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
         }
         table.setModel(defaultTableModel);

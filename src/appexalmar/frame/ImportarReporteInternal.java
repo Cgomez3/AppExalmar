@@ -54,7 +54,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author ADMIN
  */
 public class ImportarReporteInternal extends D_InternalFrameLayout {
-
+    
     private D_InternalFrameLayout internalFrameLayout;
     private D_TableModelo defaultTableModel;
     private List<TableReporteBean> listaReporte = new ArrayList<>();
@@ -69,7 +69,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
     private static D_Button btnArchivo;
     private static D_TextField txthoja;
     private static D_TextField txtArchivo;
-
+    
     public ImportarReporteInternal(Object _frame, int _width, int _height, boolean _enableDestopPane) throws HeadlessException {
         super(_frame, _width, _height, _enableDestopPane);
         EventQueue.invokeLater(() -> {
@@ -80,16 +80,16 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
             }
         });
     }
-
+    
     private void Configuracion() throws Exception {
         internalFrameLayout = this;
         this.BackgroundColor(new Color(52, 202, 188));
         this.EnableMenu(false, null, new D_Label("Registro de Llamadas", Color.white, true));
-
+        
         List<D_ControlsObject> listaFiltros = new ArrayList<>();
         List<List<D_ControlsObject>> listaFamiliaFiltros = new ArrayList<>();
         D_ControlsObject filters = new D_ControlsObject();
-
+        
         listaFiltros = new ArrayList<>();
         filters = new D_ControlsObject();
         txthoja = new D_TextField(D_TextField.Type.NUMERIC, 1, 5);
@@ -100,7 +100,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         filters.setControlName(new D_Label("N° Hoja:", Color.BLACK, true));
         listaFiltros.add(filters);
         listaFamiliaFiltros.add(listaFiltros);
-
+        
         listaFiltros = new ArrayList<>();
         filters = new D_ControlsObject();
         txtArchivo = new D_TextField(D_TextField.Type.NUMERIC, 1, 5);
@@ -109,24 +109,24 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         filters.setTypeControl(txtArchivo);
         filters.setControlName(new D_Label("File:", Color.BLACK, true));
         listaFiltros.add(filters);
-
+        
         listaFamiliaFiltros.add(listaFiltros);
-
+        
         listaFiltros = new ArrayList<>();
         btnArchivo = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "Archivo", Color.BLACK);
         filters = new D_ControlsObject();
         filters.setControlName(btnArchivo);
         listaFiltros.add(filters);
-
+        
         listaFamiliaFiltros.add(listaFiltros);
         listaFiltros = new ArrayList<>();
         btnCargar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "Cargar", Color.BLACK);
         filters = new D_ControlsObject();
         filters.setControlName(btnCargar);
         listaFiltros.add(filters);
-
+        
         listaFamiliaFiltros.add(listaFiltros);
-
+        
         listaFiltros = new ArrayList<>();
         progreso = new D_ProgressBar(1, 5);
         progreso.setBorderColor(Color.BLACK);
@@ -134,9 +134,9 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         filters = new D_ControlsObject();
         filters.setTypeControl(progreso);
         listaFiltros.add(filters);
-
+        
         listaFamiliaFiltros.add(listaFiltros);
-
+        
         this.AddFiltersToFrameHeader(listaFamiliaFiltros, new Color(52, 202, 188), "");
 
         //Add Table
@@ -145,13 +145,13 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         table.EnableRowSorter(true);
         table.AddColumWidth(ModificarAnchoColumna());
         table.AddColumnOrientation(CentrarColumnasDeTabla());
-
+        
         D_PanelTable panelTable = new D_PanelTable(table, Color.BLUE);
-
+        
         this.AddFrameToBody(panelTable);
-
+        
         this.ShowFrame();
-
+        
         btnCargar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -162,32 +162,32 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
             }
         }
         );
-
+        
         btnArchivo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                
                 CargarExcel();
             }
-
+            
         }
         );
     }
-
+    
     private ArrayList<int[]> CentrarColumnasDeTabla() {
         ArrayList<int[]> centarColumnas = new ArrayList<>();
         int[] valorColumna = new int[2];
         valorColumna[0] = 0;
         valorColumna[1] = Enumerator.CENTER;
         centarColumnas.add(valorColumna);
-
+        
         valorColumna = new int[2];
         valorColumna[0] = 1;
         valorColumna[1] = Enumerator.CENTER;
         centarColumnas.add(valorColumna);
         return centarColumnas;
     }
-
+    
     private void CargarExcel() {
         final Thread t;
         t = new Thread(() -> {
@@ -225,7 +225,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
 //                            Iterator<Row> iterator = hoja.iterator();
                         int contador = 0;
                         int flag = 0;
-                        int filas=0;
+                        int filas = 0;
                         for (int i = 0; i < hoja.getLastRowNum(); i++) {
                             fila = hoja.getRow(i);
                             columna = fila.getCell(0);
@@ -247,7 +247,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                                 titleHeader[13] = fila.getCell(21).getStringCellValue();
                                 titleHeader[14] = fila.getCell(23).getStringCellValue();
                                 titleHeader[15] = fila.getCell(24).getStringCellValue();
-
+                                
                             } else {
                                 
                                 if (!ObtenerValorExcel(columna).isEmpty()) {
@@ -256,7 +256,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                                     System.out.println(">> " + ObtenerValorExcel(columna));
                                     boolean termina = true;
                                     int count = i + 1;
-
+                                    
                                     while (termina) {
                                         fila_temp = hoja.getRow(count);
                                         columna_temp = fila_temp.getCell(17);
@@ -284,7 +284,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                                     } else {
                                         reporteCabecera.setFecha("");
                                     }
-
+                                    
                                     columna = fila.getCell(2);
                                     if (DateUtil.isCellDateFormatted(columna)) {
                                         reporteCabecera.setHora(new SimpleDateFormat("HH:mm").format(DateUtil.getJavaDate(columna.getNumericCellValue())));
@@ -293,10 +293,10 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                                     }
                                     columna = fila.getCell(3);
                                     reporteCabecera.setCelular(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(4);
                                     reporteCabecera.setLocalidadDomicilio(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(5);
                                     reporteCabecera.setEp(ObtenerValorExcel(columna));
                                     
@@ -308,52 +308,52 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                                     
                                     columna = fila.getCell(8);
                                     reporteCabecera.setCargo(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(9);
                                     reporteCabecera.setConfinadoDonde(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(10);
                                     reporteCabecera.setSede(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(19);
                                     reporteCabecera.setTipoAtencionSeguimiento(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(20);
                                     reporteCabecera.setTipoPrecencialVirtual(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(21);
                                     reporteCabecera.setMedico(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(23);
                                     reporteCabecera.setEmvSINO(ObtenerValorExcel(columna));
-
+                                    
                                     columna = fila.getCell(24);
                                     reporteCabecera.setCodSap(ObtenerValorExcel(columna));
                                 }
-
+                                
                                 detalleReporteBeans = new TableDetalleReporteBeans();
                                 columna = fila.getCell(11);
                                 detalleReporteBeans.setConsulta(ObtenerValorExcel(columna));
-
+                                
                                 columna = fila.getCell(12);
                                 detalleReporteBeans.setDetalle(ObtenerValorExcel(columna));
-
+                                
                                 columna = fila.getCell(13);
                                 detalleReporteBeans.setAcción(ObtenerValorExcel(columna));
-
+                                
                                 columna = fila.getCell(14);
-
+                                
                                 detalleReporteBeans.setDiacnostico(ObtenerValorExcel(columna));
-
+                                
                                 columna = fila.getCell(15);
                                 detalleReporteBeans.setMedicación(ObtenerValorExcel(columna));
-
+                                
                                 columna = fila.getCell(16);
                                 detalleReporteBeans.setFrecuencia(ObtenerValorExcel(columna));
-
+                                
                                 columna = fila.getCell(17);
                                 detalleReporteBeans.setDias(ObtenerValorExcel(columna));
-
+                                
                                 columna = fila.getCell(18);
                                 detalleReporteBeans.setCanntidadTotal(ObtenerValorExcel(columna));
                                 
@@ -379,8 +379,8 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                                     listaDetalle.add(detalleReporteBeans);
                                 }
                                 flag += 1;
-                                System.out.println("filas"+filas);
-                                System.out.println("flag"+ flag);
+                                System.out.println("filas" + filas);
+                                System.out.println("flag" + flag);
                                 if (filas == flag) {
                                     reporteCabecera.setListaDetalle(listaDetalle);
                                     listaReporte.add(reporteCabecera);
@@ -402,6 +402,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                             try {
                                 Thread.sleep(5);
                             } catch (InterruptedException ex) {
+                                JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                                 Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
@@ -608,18 +609,21 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                         txthoja.setEnabled(true);
                     }
                 } catch (FileNotFoundException ex) {
+                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                     progreso.setString("");
                     btnArchivo.setEnabled(true);
                     btnCargar.setEnabled(true);
                     txthoja.setEnabled(true);
                     Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                     progreso.setString("");
                     btnArchivo.setEnabled(true);
                     btnCargar.setEnabled(true);
                     txthoja.setEnabled(true);
                     Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                     progreso.setString("");
                     btnArchivo.setEnabled(true);
                     btnCargar.setEnabled(true);
@@ -627,11 +631,11 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                     Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
+            
         });
         t.start();
     }
-
+    
     private String ObtenerValorExcel(XSSFCell columna) {
         String Valor = "";
         if (columna == null) {
@@ -648,7 +652,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                 Valor = columna.getStringCellValue();
                 break;
             case NUMERIC:
-                Valor = String.valueOf(columna.getNumericCellValue());
+                Valor = String.valueOf((long)columna.getNumericCellValue());
                 break;
             case _NONE:
                 Valor = "";
@@ -658,16 +662,16 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
             case FORMULA:
                 Valor = columna.getCellFormula();
                 break;
-
+            
             default:
                 Valor = "";
                 break;
-
+            
         }
-
+        
         return Valor;
     }
-
+    
     private void Grabar() {
         final Thread t;
         t = new Thread(() -> {
@@ -681,18 +685,43 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                             TableReporteBean beans = listaReporte.get(i);
                             System.out.println("numero >> " + beans.getNumero());
                             long idGenerado = reporteModel.GrabarReporte(beans);
-                            System.out.println("idGenerado>>"+ idGenerado);
-                            PersonalExalmarBeans exalmarBeans=personalModel.ObtinePersona(beans.getCodSap().trim());
-                            if(exalmarBeans == null){
-                             PersonalExalmarBeans exalmarBeans2=personalModel.ObtinePersonaPorDni(beans.getDni().trim());
-                             if(exalmarBeans2)
+                            System.out.println("idGenerado>>" + idGenerado);
+                            PersonalExalmarBeans exalmarBeans = personalModel.ObtinePersona(beans.getCodSap().trim());
+                            if (exalmarBeans == null) {
+                                PersonalExalmarBeans exalmarBeans2 = personalModel.ObtinePersonaPorDni(beans.getDni().trim());
+                                if (exalmarBeans2 == null) {
+                                    PersonalExalmarBeans exalmarBeans3 = personalModel.ObtinePersonaPorNombre(beans.getApe_nom().trim());
+                                    if (exalmarBeans3 == null) {
+                                        exalmarBeans3 = new PersonalExalmarBeans();
+                                        exalmarBeans3.setApellidosNombres(beans.getApe_nom());
+                                        exalmarBeans3.setDni(beans.getDni());
+                                        exalmarBeans3.setCargo(beans.getCargo());
+                                        exalmarBeans3.setTipoPersonal("T");
+                                        personalModel.GrabarPersona(exalmarBeans3);
+                                    } else {
+                                        if (exalmarBeans3.getTipoPersonal().equals("T")) {
+                                            exalmarBeans3.setDni(beans.getDni());
+                                            exalmarBeans3.setCargo(beans.getCargo());
+                                            exalmarBeans3.setTipoPersonal("T");
+                                            personalModel.ActualizaPersonaNombre(exalmarBeans3);
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (exalmarBeans.getTipoPersonal().equals("T")) {
+                                    exalmarBeans.setDni(beans.getDni());
+                                    exalmarBeans.setTipoPersonal("T");
+                                    personalModel.ActualizaPersonaCodsap(exalmarBeans);
+                                }                                
                             }
                             for (int j = 0; j < listaReporte.get(i).getListaDetalle().size(); j++) {
                                 TableDetalleReporteBeans detalle = listaReporte.get(i).getListaDetalle().get(j);
                                 reporteModel.GrabarDetalle(detalle, (int) idGenerado);
                                 System.out.println("dias " + detalle.getDias());
                             }
-
+//                            if((((i + 1) * 100) / listaReporte.size()) == 3){
+//                             return;
+//                            }
                             progreso.setString(String.valueOf(((i + 1) * 100) / listaReporte.size()).concat("%"));
                             progreso.setValue(((i + 1) * 100) / listaReporte.size());
                             try {
@@ -700,17 +729,18 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                             }
-
+                            
                         }
                         String mensage = "Se cargaron ".concat(String.valueOf(listaReporte.size())).concat(" Registros.");
                         JOptionPane.showMessageDialog(null, mensage);
                         TerminarCaga();
-
+                        
                     } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                         Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-
+                
             } else {
                 JOptionPane.showMessageDialog(null, "No existen Datos para Grabar");
                 TerminarCaga();
@@ -718,7 +748,7 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         });
         t.start();
     }
-
+    
     private void TerminarCaga() {
         try {
             titleHeader = new String[0];
@@ -735,100 +765,100 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
         txthoja.setEnabled(true);
         progreso.setString("");
     }
-
+    
     private ArrayList<int[]> ModificarAnchoColumna() {
         ArrayList<int[]> anchoColumnas = new ArrayList<>();
-
+        
         int[] anchoColumna = new int[2];
         anchoColumna[0] = 0;
         anchoColumna[1] = 32;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 1;
         anchoColumna[1] = 32;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 2;
         anchoColumna[1] = 70;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 3;
         anchoColumna[1] = 70;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 4;
         anchoColumna[1] = 70;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 5;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 5;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 6;
         anchoColumna[1] = 100;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 7;
         anchoColumna[1] = 100;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 8;
         anchoColumna[1] = 100;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 9;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 10;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 11;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 12;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 13;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 14;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 15;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         anchoColumna = new int[2];
         anchoColumna[0] = 16;
         anchoColumna[1] = 150;
         anchoColumnas.add(anchoColumna);
-
+        
         return anchoColumnas;
     }
 }
