@@ -42,12 +42,12 @@ public class PersonaModel implements IPersona {
         prepareStatement.setString(3, personal.getDni());
         prepareStatement.setString(4, personal.getCargo());
         prepareStatement.setString(5, personal.getSede());
-        if (personal.getFechaIngreso().isEmpty()) {
+        if (personal.getFechaIngreso() == null) {
             prepareStatement.setString(6, null);
         } else {
             prepareStatement.setString(6, personal.getFechaIngreso());
         }
-        if (personal.getFechaNacimiento().isEmpty()) {
+        if (personal.getFechaNacimiento()== null) {
             prepareStatement.setString(7, null);
         } else {
             prepareStatement.setString(7, personal.getFechaNacimiento());
