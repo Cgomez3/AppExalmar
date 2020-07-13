@@ -52,6 +52,7 @@ public class PersonaModel implements IPersona {
         } else {
             prepareStatement.setString(7, personal.getFechaNacimiento());
         }
+        
         prepareStatement.setString(8, personal.getCatgoria());
         prepareStatement.setString(9, personal.getTipoPersonal());
         int pt = prepareStatement.executeUpdate();
