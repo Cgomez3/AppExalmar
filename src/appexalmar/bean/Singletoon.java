@@ -5,11 +5,13 @@
  */
 package appexalmar.bean;
 
+
 /**
  *
  * @author ADMIN
  */
 public class Singletoon {
+    
     private static Singletoon instanciaUnica;
     public static UsuarioBeans usuario=null;
     public static String version="1.2.0";
