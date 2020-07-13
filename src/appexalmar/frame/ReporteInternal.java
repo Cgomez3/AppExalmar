@@ -58,6 +58,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1857,8 +1858,12 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     tipoPersonal.setSelected(false);
 
                                 } catch (SQLException ex) {
+                                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                                     Logger.getLogger(ReporteInternal.class
                                             .getName()).log(Level.SEVERE, null, ex);
+                                } catch (ParseException ex) {
+                                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
+                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
                                 }
 
                             }

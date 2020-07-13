@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -738,6 +739,9 @@ public class ImportarReporteInternal extends D_InternalFrameLayout {
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
                         Logger.getLogger(ImportarPersonalInternal.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ParseException ex) {
+                        JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
+                        Logger.getLogger(ImportarReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 

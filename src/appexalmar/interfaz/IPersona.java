@@ -7,6 +7,7 @@ package appexalmar.interfaz;
 
 import appexalmar.bean.PersonalExalmarBeans;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public interface IPersona {
     List<PersonalExalmarBeans> listaPersonal() throws SQLException;
     PersonalExalmarBeans ObtinePersonaPorDni(String dni) throws SQLException;
     PersonalExalmarBeans ObtinePersonaPorNombre(String nombre) throws SQLException;
-    void ActualizaPersonaPorDni(PersonalExalmarBeans personal) throws SQLException ;
-    void ActualizaPersonaCodsap(PersonalExalmarBeans personal) throws SQLException;
-    void ActualizaPersonaNombre(PersonalExalmarBeans personal) throws SQLException;
+    void ActualizaPersonaPorDni(PersonalExalmarBeans personal) throws SQLException,ParseException ;
+    void ActualizaPersonaCodsap(PersonalExalmarBeans personal) throws SQLException,ParseException;
+    void ActualizaPersonaNombre(PersonalExalmarBeans personal) throws SQLException,ParseException;
 }
