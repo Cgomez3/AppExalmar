@@ -11,9 +11,11 @@ import Api.swing.frameword.bean.D_DataTableObject;
 import Api.swing.frameword.bean.Enumerator;
 import Api.swing.frameword.controles.D_Button;
 import Api.swing.frameword.controles.D_CheckBox;
+import Api.swing.frameword.controles.D_GroupButton;
 import Api.swing.frameword.controles.D_Label;
 import Api.swing.frameword.controles.D_Panel;
 import Api.swing.frameword.controles.D_ProgressBar;
+import Api.swing.frameword.controles.D_RadioButton;
 import Api.swing.frameword.controles.D_ScrollPane;
 import Api.swing.frameword.controles.D_Table;
 import Api.swing.frameword.controles.D_TextArea;
@@ -150,8 +152,8 @@ public class ReporteInternal extends D_InternalFrameLayout {
     D_Button btnNuevo;
     D_TextField txtDniFilter;
 
-    D_TextField txtConsultaDetalle;
-    D_TextField txtDetalleDetalle;
+    D_TextArea txtConsultaDetalle;
+    D_TextArea txtDetalleDetalle;
     D_TextField txtAccionDetalle;
     D_TextField txtDiagnosticoDetalle;
     D_TextField txtMedicacionDetalle;
@@ -163,6 +165,8 @@ public class ReporteInternal extends D_InternalFrameLayout {
     D_TextField txtAsunto;
     D_Button btnCargar;
     int grabarPersona = 0;
+    D_CheckBox ckhDni;
+    D_CheckBox chkNombre;
 
     public ReporteInternal(Object _frame, int _width, int _height, boolean _enableDestopPane) throws HeadlessException {
         super(_frame, _width, _height, _enableDestopPane);
@@ -183,10 +187,28 @@ public class ReporteInternal extends D_InternalFrameLayout {
         List<D_ControlsObject> listaFiltros = new ArrayList<>();
         List<List<D_ControlsObject>> listaFamiliaFiltros = new ArrayList<>();
         D_ControlsObject filters = new D_ControlsObject();
+
+        ckhDni = new D_CheckBox(0, 0, Color.ORANGE);
+        ckhDni.setBorderColor(Color.RED);
+        ckhDni.setText("M");
+        ckhDni.setSelected(true);
+        chkNombre = new D_CheckBox();
+        chkNombre.setBorderColor(Color.RED);
+        chkNombre.setText("F");
+        List<Object> listaBotones = new ArrayList<>();
+        listaBotones.add(ckhDni);
+        listaBotones.add(chkNombre);
+        D_GroupButton panelRadioButon = new D_GroupButton(true, listaBotones, D_GroupButton.ORIENTATION.HORIZOTAL, 1, 10, Color.ORANGE, Color.RED);
+
+        filters.setTypeControl(panelRadioButon);
+        listaFiltros.add(filters);
+        listaFamiliaFiltros.add(listaFiltros);
+
+        listaFiltros = new ArrayList<>();
+        filters = new D_ControlsObject();
         txtDniFilter = new D_TextField(D_TextField.Type.CHARACTER, 1, 5);
         txtDniFilter.setPreferredSize(new Dimension(230, 30));
         filters.setTypeControl(txtDniFilter);
-        filters.setControlName(new D_Label("Buscar:", Color.BLACK, true));
         listaFiltros.add(filters);
         listaFamiliaFiltros.add(listaFiltros);
 
@@ -198,14 +220,14 @@ public class ReporteInternal extends D_InternalFrameLayout {
         listaFiltros.add(filters);
 
         listaFamiliaFiltros.add(listaFiltros);
-        
+
         listaFiltros = new ArrayList<>();
         filters = new D_ControlsObject();
-        btnCragraExcel = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("excel.png")), "Descargar");        
+        btnCragraExcel = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("excel.png")), "Descargar");
         filters.setTypeControl(btnCragraExcel);
         listaFiltros.add(filters);
         listaFamiliaFiltros.add(listaFiltros);
-        
+
         filters = new D_ControlsObject();
         listaFiltros = new ArrayList<>();
         d_ProgressBar = new D_ProgressBar(1, 10, Color.RED);
@@ -214,15 +236,15 @@ public class ReporteInternal extends D_InternalFrameLayout {
         btnCargar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "Cargar");
         filters.setTypeControl(d_ProgressBar);
         listaFiltros.add(filters);
-        
+
         listaFamiliaFiltros.add(listaFiltros);
-        
+
         filters = new D_ControlsObject();
         listaFiltros = new ArrayList<>();
         btnCargar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "Cargar");
         filters.setTypeControl(btnCargar);
         listaFiltros.add(filters);
-        
+
         listaFamiliaFiltros.add(listaFiltros);
 
         this.AddFiltersToFrameHeader(listaFamiliaFiltros, new Color(52, 202, 188), "");
@@ -300,47 +322,48 @@ public class ReporteInternal extends D_InternalFrameLayout {
                     btnGrabar.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            if (JOptionPane.showConfirmDialog(null, "Va a Grabar el Registro, Dese Continuar?", "Registro de Llamada", JOptionPane.OK_OPTION) == 0) {
-                                TableReporteBean reporteBean = new TableReporteBean();
-                                try {
-                                    reporteBean.setNumero(reporteModel.ObtenerNumero());
-                                    Date fechaActual = new Date();
-
-                                    reporteBean.setFecha(new SimpleDateFormat("yyyy-MM-dd").format(fechaActual));
-                                    reporteBean.setHora(new SimpleDateFormat("HH:MM").format(fechaActual));
-                                    reporteBean.setCelular(txtCelularDetalle.getText());
-                                    reporteBean.setLocalidadDomicilio(txtLocalidadDetalle.getText());
-                                    reporteBean.setConfinadoDonde(txtConfinadoDetalle.getText());
-                                    reporteBean.setSede(txtSedeDetalle.getText());
-                                    reporteBean.setEp(txtEpDetalle.getText());
-                                    reporteBean.setTipoAtencionSeguimiento(txtAtenSegDetalle.getText());
-                                    reporteBean.setTipoPrecencialVirtual(txtPrenVirDetalle.getText());
-                                    String alerta;
-                                    if (chksiDetalle.isSelected()) {
-                                        alerta = "SI";
-                                    } else {
-                                        alerta = "NO";
-                                    }
-                                    reporteBean.setEmvSINO(alerta);
-                                    reporteBean.setCodSap(txtCodSabDetalle.getText());
-                                    reporteBean.setMedico("DRA MILAGROS VALENTIN");
-                                    long idCabecera = reporteModel.GrabarReporte(reporteBean);
-                                    if (listaTableDetalle.size() > 0) {
-                                        for (int i = 0; i < listaTableDetalle.size(); i++) {
-                                            TableDetalleReporteBeans detalleReporte = listaTableDetalle.get(i);
-                                            reporteModel.GrabarDetalle(detalleReporte, (int) idCabecera);
-                                        }
-
-                                    }
-                                    JOptionPane.showMessageDialog(null, "Se Creó el Registro Correctamente.");
-                                    defaultTableModel = (DefaultTableModel) table.getModel();
-                                    defaultTableModel.addRow(reporteModel.listaReporte((int) idCabecera));
-                                    registroLlamadas.CloseInternalFrame();
-
-                                } catch (SQLException ex) {
-                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
+                            llenarDetalleALista();
+//                            if (JOptionPane.showConfirmDialog(null, "Va a Grabar el Registro, Dese Continuar?", "Registro de Llamada", JOptionPane.OK_OPTION) == 0) {
+//                                TableReporteBean reporteBean = new TableReporteBean();
+//                                try {
+//                                    reporteBean.setNumero(reporteModel.ObtenerNumero());
+//                                    Date fechaActual = new Date();
+//
+//                                    reporteBean.setFecha(new SimpleDateFormat("yyyy-MM-dd").format(fechaActual));
+//                                    reporteBean.setHora(new SimpleDateFormat("HH:MM").format(fechaActual));
+//                                    reporteBean.setCelular(txtCelularDetalle.getText());
+//                                    reporteBean.setLocalidadDomicilio(txtLocalidadDetalle.getText());
+//                                    reporteBean.setConfinadoDonde(txtConfinadoDetalle.getText());
+//                                    reporteBean.setSede(txtSedeDetalle.getText());
+//                                    reporteBean.setEp(txtEpDetalle.getText());
+//                                    reporteBean.setTipoAtencionSeguimiento(txtAtenSegDetalle.getText());
+//                                    reporteBean.setTipoPrecencialVirtual(txtPrenVirDetalle.getText());
+//                                    String alerta;
+//                                    if (chksiDetalle.isSelected()) {
+//                                        alerta = "SI";
+//                                    } else {
+//                                        alerta = "NO";
+//                                    }
+//                                    reporteBean.setEmvSINO(alerta);
+//                                    reporteBean.setCodSap(txtCodSabDetalle.getText());
+//                                    reporteBean.setMedico("DRA MILAGROS VALENTIN");
+//                                    long idCabecera = reporteModel.GrabarReporte(reporteBean);
+//                                    if (listaTableDetalle.size() > 0) {
+//                                        for (int i = 0; i < listaTableDetalle.size(); i++) {
+//                                            TableDetalleReporteBeans detalleReporte = listaTableDetalle.get(i);
+//                                            reporteModel.GrabarDetalle(detalleReporte, (int) idCabecera);
+//                                        }
+//
+//                                    }
+//                                    JOptionPane.showMessageDialog(null, "Se Creó el Registro Correctamente.");
+//                                    defaultTableModel = (DefaultTableModel) table.getModel();
+//                                    defaultTableModel.addRow(reporteModel.listaReporte((int) idCabecera));
+//                                    registroLlamadas.CloseInternalFrame();
+//
+//                                } catch (SQLException ex) {
+//                                    Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+//                                }
+//                            }
                         }
                     });
                     registroLlamadas.ShowFrame();
@@ -366,10 +389,9 @@ public class ReporteInternal extends D_InternalFrameLayout {
             public void keyPressed(KeyEvent e
             ) {
                 EventQueue.invokeLater(() -> {
-                    defaultTableModel = (DefaultTableModel) table.getModel();
-                    TableRowSorter<DefaultTableModel> rowSorter = new TableRowSorter<>(defaultTableModel);
-                    table.setRowSorter(rowSorter);
-                    rowSorter.setRowFilter(RowFilter.regexFilter(txtDniFilter.getText()));
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        BuscarCargarReporte();
+                    }
                 });
             }
 
@@ -379,6 +401,85 @@ public class ReporteInternal extends D_InternalFrameLayout {
             }
         }
         );
+    }
+
+    private void llenarDetalleALista() {
+
+        for (int i = 0; i < tableDetalle.getRowCount(); i++) {
+            TableDetalleReporteBeans detalleReporteBeans = new TableDetalleReporteBeans();
+            detalleReporteBeans.setConsulta(tableDetalle.getValueAt(i, 2).toString());
+            detalleReporteBeans.setDetalle(tableDetalle.getValueAt(i, 3).toString());
+            detalleReporteBeans.setAcción(tableDetalle.getValueAt(i, 4).toString());
+            detalleReporteBeans.setDiacnostico(tableDetalle.getValueAt(i, 5).toString());
+            detalleReporteBeans.setMedicación(tableDetalle.getValueAt(i, 6).toString());
+            detalleReporteBeans.setFrecuencia(tableDetalle.getValueAt(i, 7).toString());
+            detalleReporteBeans.setDias(tableDetalle.getValueAt(i, 8).toString());
+            detalleReporteBeans.setCanntidadTotal(tableDetalle.getValueAt(i, 9).toString());
+            listaTableDetalle.add(detalleReporteBeans);
+            System.out.println("appexalmar.frame.ReporteInternal.llenarDetalleALista()>> "+ tableDetalle.getValueAt(i, 2).toString());
+        }
+    }
+
+    private void BuscarCargarReporte() {
+        final Thread t;
+        t = new Thread(() -> {
+            defaultTableModel = (DefaultTableModel) table.getModel();
+            d_ProgressBar.setStringPainted(true);
+            while (table.getRowCount() > 0) {
+                defaultTableModel.removeRow(0);
+            }
+            List<ReporteCabeceraBeans> listaReporte = null;
+            try {
+                if (chkNombre.isSelected()) {
+                    listaReporte = reporteModel.BuscarReporte(2, txtDniFilter.getText());
+                } else if (ckhDni.isSelected()) {
+                    listaReporte = reporteModel.BuscarReporte(1, txtDniFilter.getText());
+                }
+
+                for (int i = 0; i < listaReporte.size(); i++) {
+                    ReporteCabeceraBeans reporte = listaReporte.get(i);
+                    Object[] objects = new Object[22];
+
+                    objects[0] = reporte.getBtnGrabar();
+                    objects[1] = reporte.getBtnEditar();
+                    objects[2] = reporte.getBtnEnviar();
+                    objects[3] = reporte.getNumero();
+                    objects[4] = reporte.getFecha();
+                    objects[5] = reporte.getHora();
+                    objects[6] = reporte.getCelular();
+                    objects[7] = reporte.getLocalidadDomicilio();
+                    objects[8] = reporte.getEp();
+                    objects[9] = reporte.getDni();
+                    objects[10] = reporte.getApe_nom();
+                    objects[11] = reporte.getCargo();
+                    objects[12] = reporte.getConfinadoDonde();
+                    objects[13] = reporte.getSede();
+                    objects[14] = reporte.getTipo_atencion();
+                    objects[15] = reporte.getTipo_presencial();
+                    objects[16] = reporte.getMedico();
+                    objects[17] = reporte.getEmvSINO();
+                    objects[18] = reporte.getCodsap();
+                    objects[19] = reporte.getFecha_ingreso();
+                    objects[20] = reporte.getFecha_naciomiento();
+                    objects[21] = reporte.getCategoria();
+                    defaultTableModel.addRow(objects);
+                    d_ProgressBar.setString(String.valueOf(((i + 1) * 100) / listaReporte.size()).concat("%"));
+                    d_ProgressBar.setValue(((i + 1) * 100) / listaReporte.size());
+                    try {
+                        Thread.sleep(5);
+
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ImportarPersonalInternal.class
+                                .getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                d_ProgressBar.setString("");
+                btnCargar.setEnabled(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        t.start();
     }
 
     private void VolverCargarTabla() {
@@ -824,7 +925,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     tableDetalle.AddBackGroundColorTable(new Color(52, 202, 188));
                                     tableDetalle.AddBackGroundColorTableHeader(new Color(52, 202, 188));
                                     tableDetalle.AddColumnOrientation(AlingColunaDetalle());
-                                    
+
                                     D_PanelTable panelTableDetalle = new D_PanelTable(tableDetalle, Color.BLUE);
                                     registroLlamadas.AddFrameToBody(panelTableDetalle);
                                     List<Object> listaBotones = new ArrayList<>();
@@ -1363,13 +1464,13 @@ public class ReporteInternal extends D_InternalFrameLayout {
                             Object dias = tableDetalle.getValueAt(row, 8);
                             Object cantidad = tableDetalle.getValueAt(row, 9);
                             try {
-                                D_InternalFrameLayout frameLayout = new D_InternalFrameLayout(internal, 500, 400, false);
+                                D_InternalFrameLayout frameLayout = new D_InternalFrameLayout(internal, 500, 500, false);
                                 frameLayout.BackgroundColor(new Color(52, 202, 188));
-                                frameLayout.EnableMenu(false, null, new D_Label("Añadir Detalle", Color.white, true));
+                                frameLayout.EnableMenu(false, null, new D_Label("Actualiza Detalle", Color.white, true));
 
                                 frameLayout.AddFrameToBody("", ListaControlesDetalle(consulta.toString(), detalle.toString(), accion.toString(), diagnostico.toString(), medicacion.toString(), frecuencia.toString(), dias.toString(), cantidad.toString()), new Color(52, 202, 188));
 
-                                D_Button btnGrabar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "GRABAR");
+                                D_Button btnGrabar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "ACTUALIZAR");
                                 D_Button btnCancelar = new D_Button(1, 10, D_Button.TypeButton.ROUNDED_CORNER, "CANCELAR");
                                 ArrayList<Object> listaBotonDetalle = new ArrayList<>();
                                 listaBotonDetalle.add(btnGrabar);
@@ -1387,10 +1488,11 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                         TableDetalleReporteBeans detalleReporteBeans = new TableDetalleReporteBeans();
                                         detalleReporteBeans
                                                 .setBtnModificar(new D_Button(1, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class
-                                                        .getResource("registro.png")), "M", ""));
+                                                        .getResource("registro.png")), "M"));
                                         detalleReporteBeans
                                                 .setBtnEliminar(new D_Button(1, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class
-                                                        .getResource("borrar.png")), "E", ""));
+                                                        .getResource("borrar.png")), "E"));
+
                                         detalleReporteBeans.setConsulta(txtConsultaDetalle.getText());
                                         detalleReporteBeans.setDetalle(txtDetalleDetalle.getText());
                                         detalleReporteBeans.setAcción(txtAccionDetalle.getText());
@@ -1399,7 +1501,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                         detalleReporteBeans.setFrecuencia(txtFrecuenciaDetalle.getText());
                                         detalleReporteBeans.setDias(txtDiasDetalle.getText());
                                         detalleReporteBeans.setCanntidadTotal(txtCantidadTotalDetalle.getText());
-                                        listaTableDetalle.add(detalleReporteBeans);
+                                        //listaTableDetalle.add(detalleReporteBeans);
 
                                         Object[] data = new Object[10];
                                         data[0] = detalleReporteBeans.getBtnModificar();
@@ -1413,7 +1515,11 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                         data[8] = detalleReporteBeans.getDias();
                                         data[9] = detalleReporteBeans.getCanntidadTotal();
                                         defaultTableModel = (DefaultTableModel) tableDetalle.getModel();
-                                        defaultTableModel.addRow(data);
+                                        for (int i = 2; i < data.length; i++) {
+                                            defaultTableModel.setValueAt(data[i], row, i);
+                                        }
+
+                                        //defaultTableModel.fireTableDataChanged();
                                         frameLayout.CloseInternalFrame();
                                     }
                                 });
@@ -1429,6 +1535,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                         if (button.getName().equals("E")) {
                             defaultTableModel = (DefaultTableModel) tableDetalle.getModel();
                             defaultTableModel.removeRow(row);
+                            defaultTableModel.fireTableDataChanged();
                         }
                     }
                 }
@@ -1464,18 +1571,21 @@ public class ReporteInternal extends D_InternalFrameLayout {
         D_ControlsObject filters = new D_ControlsObject();
         filters.setControlName(new D_Label("Consulta:", Color.black, true));
 
-        txtConsultaDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        txtConsultaDetalle.setPreferredSize(new Dimension(250, 30));
+        txtConsultaDetalle = new D_TextArea(false, 2, 1, Color.WHITE);
+
         txtConsultaDetalle.setText(consulta);
-        filters.setTypeControl(txtConsultaDetalle);
+        D_ScrollPane txtConsultaScroll = new D_ScrollPane(1, 10, txtConsultaDetalle);
+        txtConsultaScroll.setPreferredSize(new Dimension(250, 90));
+        filters.setTypeControl(txtConsultaScroll);
         listaFiltroDetalle.add(filters);
 
         filters = new D_ControlsObject();
         filters.setControlName(new D_Label("Detalle:", Color.black, true));
-        txtDetalleDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-        txtDetalleDetalle.setPreferredSize(new Dimension(250, 30));
+        txtDetalleDetalle = new D_TextArea(false, 2, 1, Color.WHITE);
         txtDetalleDetalle.setText(detalle);
-        filters.setTypeControl(txtDetalleDetalle);
+        D_ScrollPane txtDetalleScroll = new D_ScrollPane(1, 10, txtDetalleDetalle);
+        txtDetalleScroll.setPreferredSize(new Dimension(250, 90));
+        filters.setTypeControl(txtDetalleScroll);
         listaFiltroDetalle.add(filters);
 
         filters = new D_ControlsObject();
@@ -1858,11 +1968,11 @@ public class ReporteInternal extends D_InternalFrameLayout {
                                     tipoPersonal.setSelected(false);
 
                                 } catch (SQLException ex) {
-                                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
+                                    JOptionPane.showMessageDialog(null, "Error:" + ex.getMessage());
                                     Logger.getLogger(ReporteInternal.class
                                             .getName()).log(Level.SEVERE, null, ex);
                                 } catch (ParseException ex) {
-                                    JOptionPane.showMessageDialog(null, "Error:"+ ex.getMessage());
+                                    JOptionPane.showMessageDialog(null, "Error:" + ex.getMessage());
                                     Logger.getLogger(ReporteInternal.class.getName()).log(Level.SEVERE, null, ex);
                                 }
 
@@ -1970,7 +2080,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
             public void actionPerformed(ActionEvent e
             ) {
                 try {
-                    D_InternalFrameLayout frameLayout = new D_InternalFrameLayout(internal, 500, 400, false);
+                    D_InternalFrameLayout frameLayout = new D_InternalFrameLayout(internal, 500, 500, false);
                     frameLayout.BackgroundColor(new Color(52, 202, 188));
                     frameLayout.EnableMenu(false, null, new D_Label("Añadir Detalle", Color.white, true));
                     List<D_ControlsObject> listaFiltroDetalle = new ArrayList<>();
@@ -1979,16 +2089,18 @@ public class ReporteInternal extends D_InternalFrameLayout {
                     D_ControlsObject filters = new D_ControlsObject();
                     filters.setControlName(new D_Label("Consulta:", Color.black, true));
 
-                    txtConsultaDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtConsultaDetalle.setPreferredSize(new Dimension(250, 30));
-                    filters.setTypeControl(txtConsultaDetalle);
+                    txtConsultaDetalle = new D_TextArea(false, 3, 1, Color.WHITE);
+                    D_ScrollPane txtConsultaScroll = new D_ScrollPane(1, 10, txtConsultaDetalle);
+                    txtConsultaScroll.setPreferredSize(new Dimension(250, 90));
+                    filters.setTypeControl(txtConsultaScroll);
                     listaFiltroDetalle.add(filters);
 
                     filters = new D_ControlsObject();
                     filters.setControlName(new D_Label("Detalle:", Color.black, true));
-                    txtDetalleDetalle = new D_TextField(D_TextField.Type.CHARACTER, 1, 10);
-                    txtDetalleDetalle.setPreferredSize(new Dimension(250, 30));
-                    filters.setTypeControl(txtDetalleDetalle);
+                    txtDetalleDetalle = new D_TextArea(false, 3, 1, Color.WHITE);
+                    D_ScrollPane txtDetalleScroll = new D_ScrollPane(1, 10, txtDetalleDetalle);
+                    txtDetalleScroll.setPreferredSize(new Dimension(250, 90));
+                    filters.setTypeControl(txtDetalleScroll);
                     listaFiltroDetalle.add(filters);
 
                     filters = new D_ControlsObject();
@@ -2066,7 +2178,7 @@ public class ReporteInternal extends D_InternalFrameLayout {
                             detalleReporteBeans.setFrecuencia(txtFrecuenciaDetalle.getText());
                             detalleReporteBeans.setDias(txtDiasDetalle.getText());
                             detalleReporteBeans.setCanntidadTotal(txtCantidadTotalDetalle.getText());
-                            listaTableDetalle.add(detalleReporteBeans);
+                            //listaTableDetalle.add(detalleReporteBeans);
 
                             Object[] data = new Object[10];
                             data[0] = detalleReporteBeans.getBtnModificar();

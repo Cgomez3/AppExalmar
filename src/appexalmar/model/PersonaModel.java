@@ -47,12 +47,12 @@ public class PersonaModel implements IPersona {
         } else {
             prepareStatement.setString(6, personal.getFechaIngreso());
         }
-        if (personal.getFechaNacimiento()== null) {
+        if (personal.getFechaNacimiento() == null) {
             prepareStatement.setString(7, null);
         } else {
             prepareStatement.setString(7, personal.getFechaNacimiento());
         }
-        
+
         prepareStatement.setString(8, personal.getCatgoria());
         prepareStatement.setString(9, personal.getTipoPersonal());
         int pt = prepareStatement.executeUpdate();
@@ -63,7 +63,7 @@ public class PersonaModel implements IPersona {
     @Override
     public PersonalExalmarBeans ObtinePersona(String codsap) throws SQLException {
         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-         System.out.println("codsap"+codsap);
+        System.out.println("codsap" + codsap);
         String consulta = "SELECT * FROM personal WHERE CODSAP= '" + codsap + "'";
         resultSet = statement.executeQuery(consulta);
         PersonalExalmarBeans personal = null;
@@ -208,7 +208,7 @@ public class PersonaModel implements IPersona {
     }
 
     @Override
-    public void ActualizaPersonaPorDni(PersonalExalmarBeans personal) throws SQLException,ParseException {
+    public void ActualizaPersonaPorDni(PersonalExalmarBeans personal) throws SQLException, ParseException {
         SQL = "UPDATE PERSONAL SET CODSAP=? , APELLIDO_NOMBRES= ?, CARGO= ?,SEDE= ?,FECHA_INGRESO= ?,FECHA_NACIMIENTO= ?,CATEGORIA=?,TIPO_PERSONAL=? WHERE DNI= ?";
         prepareStatement = conexion.getConection().prepareStatement(SQL, PreparedStatement.RETURN_GENERATED_KEYS);
         prepareStatement.setString(1, personal.getCodsap());
@@ -218,29 +218,29 @@ public class PersonaModel implements IPersona {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechai;
         Date fechan;
-        
-            prepareStatement.setString(5, null);
-            prepareStatement.setString(6, null);
-            if (personal.getFechaIngreso() != null) {
-                fechai = (Date) format.parse(personal.getFechaIngreso());
-                prepareStatement.setString(5, new SimpleDateFormat("yyyy-MM-dd").format(fechai));
-            }
-            if (personal.getFechaNacimiento() != null) {
-                fechan = (Date) format.parse(personal.getFechaNacimiento());
 
-                prepareStatement.setString(6, new SimpleDateFormat("yyyy-MM-dd").format(fechan));
-            }
-            prepareStatement.setString(7, personal.getCatgoria());
-            prepareStatement.setString(8, personal.getTipoPersonal());
-            prepareStatement.setString(9, personal.getDni());
-            int pt = prepareStatement.executeUpdate();
-            System.out.println("rpta " + pt);
-            conexion.CloseSql();
-        
+        prepareStatement.setString(5, null);
+        prepareStatement.setString(6, null);
+        if (personal.getFechaIngreso() != null) {
+            fechai = (Date) format.parse(personal.getFechaIngreso());
+            prepareStatement.setString(5, new SimpleDateFormat("yyyy-MM-dd").format(fechai));
+        }
+        if (personal.getFechaNacimiento() != null) {
+            fechan = (Date) format.parse(personal.getFechaNacimiento());
+
+            prepareStatement.setString(6, new SimpleDateFormat("yyyy-MM-dd").format(fechan));
+        }
+        prepareStatement.setString(7, personal.getCatgoria());
+        prepareStatement.setString(8, personal.getTipoPersonal());
+        prepareStatement.setString(9, personal.getDni());
+        int pt = prepareStatement.executeUpdate();
+        System.out.println("rpta " + pt);
+        conexion.CloseSql();
+
     }
 
     @Override
-    public void ActualizaPersonaCodsap(PersonalExalmarBeans personal) throws SQLException,ParseException {
+    public void ActualizaPersonaCodsap(PersonalExalmarBeans personal) throws SQLException, ParseException {
         SQL = "UPDATE PERSONAL SET APELLIDO_NOMBRES= ?, DNI=?, CARGO= ?,SEDE= ?,FECHA_INGRESO= ?,FECHA_NACIMIENTO= ?,CATEGORIA=?,TIPO_PERSONAL=? WHERE CODSAP= ?";
         prepareStatement = conexion.getConection().prepareStatement(SQL, PreparedStatement.RETURN_GENERATED_KEYS);
         prepareStatement.setString(1, personal.getApellidosNombres());
@@ -252,54 +252,54 @@ public class PersonaModel implements IPersona {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechai;
         Date fechan;
-        
-            prepareStatement.setString(5, null);
-            prepareStatement.setString(6, null);
-            if (personal.getFechaIngreso() != null) {
-                fechai = (Date) format.parse(personal.getFechaIngreso());
-                prepareStatement.setString(5, new SimpleDateFormat("yyyy-MM-dd").format(fechai));
-            }
-            if (personal.getFechaNacimiento() != null) {
-                fechan = (Date) format.parse(personal.getFechaNacimiento());
-                prepareStatement.setString(6, new SimpleDateFormat("yyyy-MM-dd").format(fechan));
-            }
-            prepareStatement.setString(7, personal.getCatgoria());
-            prepareStatement.setString(8, personal.getTipoPersonal());
-            System.out.println("personal.getCodsap()" + personal.getCodsap());
-            prepareStatement.setString(9, personal.getCodsap());
-            int pt = prepareStatement.executeUpdate();
-            System.out.println("rpta " + pt);
-            conexion.CloseSql();
-        
+
+        prepareStatement.setString(5, null);
+        prepareStatement.setString(6, null);
+        if (personal.getFechaIngreso() != null) {
+            fechai = (Date) format.parse(personal.getFechaIngreso());
+            prepareStatement.setString(5, new SimpleDateFormat("yyyy-MM-dd").format(fechai));
+        }
+        if (personal.getFechaNacimiento() != null) {
+            fechan = (Date) format.parse(personal.getFechaNacimiento());
+            prepareStatement.setString(6, new SimpleDateFormat("yyyy-MM-dd").format(fechan));
+        }
+        prepareStatement.setString(7, personal.getCatgoria());
+        prepareStatement.setString(8, personal.getTipoPersonal());
+        System.out.println("personal.getCodsap()" + personal.getCodsap());
+        prepareStatement.setString(9, personal.getCodsap());
+        int pt = prepareStatement.executeUpdate();
+        System.out.println("rpta " + pt);
+        conexion.CloseSql();
+
     }
 
     @Override
-    public void ActualizaPersonaNombre(PersonalExalmarBeans personal) throws SQLException,ParseException {
+    public void ActualizaPersonaNombre(PersonalExalmarBeans personal) throws SQLException, ParseException {
         SQL = "UPDATE PERSONAL SET  DNI=?, CARGO= ?,SEDE= ?,FECHA_INGRESO= ?,FECHA_NACIMIENTO= ?,CATEGORIA=?,TIPO_PERSONAL=? WHERE APELLIDO_NOMBRES= ?";
         prepareStatement = conexion.getConection().prepareStatement(SQL, PreparedStatement.RETURN_GENERATED_KEYS);
         prepareStatement.setString(1, personal.getDni());
         prepareStatement.setString(2, personal.getCargo());
         prepareStatement.setString(3, personal.getSede());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        
-            prepareStatement.setString(4, null);
-            prepareStatement.setString(5, null);
-            if (personal.getFechaIngreso() != null) {
-                Date fechai = (Date) format.parse(personal.getFechaIngreso());
-                prepareStatement.setString(4, new SimpleDateFormat("yyyy-MM-dd").format(fechai));
-            }
-            if (personal.getFechaNacimiento() != null) {
-                Date fechan = (Date) format.parse(personal.getFechaNacimiento());
-                prepareStatement.setString(5, new SimpleDateFormat("yyyy-MM-dd").format(fechan));
-            }
 
-            prepareStatement.setString(6, personal.getCatgoria());
-            prepareStatement.setString(7, personal.getTipoPersonal());
-            prepareStatement.setString(8, personal.getApellidosNombres());
-            int pt = prepareStatement.executeUpdate();
-            System.out.println("rpta " + pt);
-            conexion.CloseSql();
-        
+        prepareStatement.setString(4, null);
+        prepareStatement.setString(5, null);
+        if (personal.getFechaIngreso() != null) {
+            Date fechai = (Date) format.parse(personal.getFechaIngreso());
+            prepareStatement.setString(4, new SimpleDateFormat("yyyy-MM-dd").format(fechai));
+        }
+        if (personal.getFechaNacimiento() != null) {
+            Date fechan = (Date) format.parse(personal.getFechaNacimiento());
+            prepareStatement.setString(5, new SimpleDateFormat("yyyy-MM-dd").format(fechan));
+        }
+
+        prepareStatement.setString(6, personal.getCatgoria());
+        prepareStatement.setString(7, personal.getTipoPersonal());
+        prepareStatement.setString(8, personal.getApellidosNombres());
+        int pt = prepareStatement.executeUpdate();
+        System.out.println("rpta " + pt);
+        conexion.CloseSql();
+
     }
 
 }

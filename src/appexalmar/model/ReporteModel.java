@@ -13,6 +13,7 @@ import appexalmar.bean.ReporteCabeceraBeans;
 import appexalmar.bean.TableDetalleReporteBeans;
 import appexalmar.bean.TableReporteBean;
 import appexalmar.image.RutaImagen;
+import appexalmar.interfaz.Enumerator;
 import appexalmar.interfaz.IReporte;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +41,7 @@ public class ReporteModel implements IReporte {
     @Override
     public List<ReporteCabeceraBeans> listaReporte() throws SQLException {
         statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        resultSet = statement.executeQuery("SELECT * FROM reporte_cabecera");
+        resultSet = statement.executeQuery("SELECT * FROM reporte_cabecera order by id_cabecera desc limit 50");
         List<ReporteCabeceraBeans> listaReportes = new ArrayList<>();
         ReporteCabeceraBeans reporteBeans;
         while (resultSet.next()) {
@@ -333,7 +334,7 @@ public class ReporteModel implements IReporte {
         prepareStatement.setString(11, reporteBean.getEmvSINO());
         prepareStatement.setString(12, reporteBean.getCodSap());
         prepareStatement.setString(13, reporteBean.getMedico());
-        System.out.println("reporteBean.getDni()"+reporteBean.getDni());
+        System.out.println("reporteBean.getDni()" + reporteBean.getDni());
         prepareStatement.setString(14, reporteBean.getDni());
         int pt = prepareStatement.executeUpdate();
         if (pt == 0) {
@@ -408,6 +409,80 @@ public class ReporteModel implements IReporte {
         prepareStatement.setInt(1, id_cabecera);
         prepareStatement.executeUpdate();
         conexion.CloseSql();
+    }
+
+    @Override
+    public List<ReporteCabeceraBeans> BuscarReporte(int tipo, String descripcion) throws SQLException {
+        statement = conexion.getConection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        if (tipo == 1) {
+            QUERY = "SELECT * FROM reporte_cabecera WHERE DNI  LIKE '%" + descripcion + "%'";
+        } else if (tipo == 2) {
+            QUERY = "SELECT * FROM bd_exalmar.reporte_cabecera where dni in (SELECT DNI FROM personal WHERE apellido_nombres LIKE '%" + descripcion + "%' ) ";
+        }
+
+        resultSet = statement.executeQuery(QUERY);
+        List<ReporteCabeceraBeans> listaReportes = new ArrayList<>();
+        ReporteCabeceraBeans reporteBeans;
+        while (resultSet.next()) {
+            reporteBeans = new ReporteCabeceraBeans();
+            D_Button btnEditar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("refresh.png")), "E", "");
+            btnEditar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
+            D_Button btnAgregar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("addsi.png")), "G", "");
+            btnAgregar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
+            D_Button btnEnviar = new D_Button(0, 5, D_Button.TypeButton.ROUNDED_CORNER, new ImageIcon(RutaImagen.class.getResource("email.png")), "I", "");
+            btnEnviar.setHiddenValue(String.valueOf(resultSet.getInt("id_cabecera")));
+            reporteBeans.setBtnEditar(btnEditar);
+            reporteBeans.setBtnGrabar(btnAgregar);
+            reporteBeans.setBtnEnviar(btnEnviar);
+            reporteBeans.setNumero(resultSet.getInt("numero"));
+            java.util.Date fecha = resultSet.getDate("fecha");
+            if (fecha != null) {
+                reporteBeans.setFecha(new SimpleDateFormat("dd-MM-yyyy").format(fecha));
+            } else {
+                reporteBeans.setFecha("");
+            }
+
+            reporteBeans.setHora(resultSet.getString("hora"));
+            reporteBeans.setCelular(resultSet.getString("celular"));
+            reporteBeans.setLocalidadDomicilio(resultSet.getString("localidad_domicilio"));
+            reporteBeans.setEp(resultSet.getString("ep"));
+            reporteBeans.setDni(resultSet.getString("dni"));
+            String codsap = resultSet.getString("cod_sap");
+            if (codsap.isEmpty()) {
+                codsap = "0";
+            }
+            PersonalExalmarBeans personal = personaModel.ObtinePersona(codsap);
+            if (personal != null) {
+                reporteBeans.setApe_nom(personal.getApellidosNombres());
+                reporteBeans.setDni(personal.getDni());
+                reporteBeans.setCargo(personal.getCargo());
+                reporteBeans.setCodsap(personal.getCodsap());
+                reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
+                reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
+                reporteBeans.setCategoria(personal.getCatgoria());
+            } else {
+                personal = personaModel.ObtinePersonaPorDni(reporteBeans.getDni());
+                if (personal != null) {
+                    reporteBeans.setApe_nom(personal.getApellidosNombres());
+                    reporteBeans.setDni(personal.getDni());
+                    reporteBeans.setCargo(personal.getCargo());
+                    reporteBeans.setCodsap(personal.getCodsap());
+                    reporteBeans.setFecha_ingreso(personal.getFechaIngreso());
+                    reporteBeans.setFecha_naciomiento(personal.getFechaNacimiento());
+                    reporteBeans.setCategoria(personal.getCatgoria());
+                }
+            }
+            reporteBeans.setConfinadoDonde(resultSet.getString("confinado_donde"));
+            reporteBeans.setSede(resultSet.getString("sede"));
+            reporteBeans.setTipo_atencion(resultSet.getString("tipo_atencion_seguimiento"));
+            reporteBeans.setTipo_presencial(resultSet.getString("tipo_presencial_virtual"));
+            reporteBeans.setMedico(resultSet.getString("medico"));
+            reporteBeans.setEmvSINO(resultSet.getString("alerta"));
+
+            listaReportes.add(reporteBeans);
+        }
+        conexion.CloseSql();
+        return listaReportes;
     }
 
 }
